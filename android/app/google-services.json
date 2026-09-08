@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "767752664402",
+    "project_id": "allumniconnect-ad294",
+    "storage_bucket": "allumniconnect-ad294.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:767752664402:android:f45429eda5997ca882b68b",
+        "android_client_info": {
+          "package_name": "com.allumni.allumni_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdttCxPiix2qHQ7gT_oaK1RxVP0NvvZmc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
