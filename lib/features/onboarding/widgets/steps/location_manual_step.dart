@@ -1,3 +1,4 @@
+import 'package:allumni_connect/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
@@ -11,12 +12,14 @@ class LocationManualStep extends StatefulWidget {
   final VoidCallback onContinue;
   final VoidCallback onBack;
   final bool fromGps;
+  final LocationResult? locationResult;
 
   const LocationManualStep({
     super.key,
     required this.onContinue,
     required this.onBack,
     this.fromGps = false,
+    this.locationResult,
   });
 
   @override
@@ -32,9 +35,9 @@ class _LocationManualStepState extends State<LocationManualStep> with AutomaticK
   @override
   void initState() {
     super.initState();
-    _adresse = TextEditingController(text: widget.fromGps ? 'Bonapriso' : '');
-    _ville = TextEditingController(text: widget.fromGps ? 'Douala' : '');
-    _pays = TextEditingController(text: widget.fromGps ? 'Cameroun' : '');
+    _adresse = TextEditingController(text: widget.fromGps ? widget.locationResult?.adress : '');
+    _ville = TextEditingController(text: widget.fromGps ? widget.locationResult?.city : '');
+    _pays = TextEditingController(text: widget.fromGps ? widget.locationResult?.country : '');
   }
 
   @override
@@ -47,9 +50,9 @@ class _LocationManualStepState extends State<LocationManualStep> with AutomaticK
 
   void _resyncFromSource() {
     if (widget.fromGps) {
-      _adresse.text = 'Bonapriso';
-      _ville.text = 'Douala';
-      _pays.text = 'Cameroun';
+      _adresse.text = widget.locationResult?.adress ?? '';
+      _ville.text = widget.locationResult?.city ?? '';
+      _pays.text = widget.locationResult?.country ?? '';
     } else {
       _adresse.clear();
       _ville.clear();

@@ -1,3 +1,4 @@
+import 'package:allumni_connect/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:allumni_connect/routing/routes.dart';
@@ -8,6 +9,9 @@ import 'package:allumni_connect/features/onboarding/widgets/steps/location_choic
 import 'package:allumni_connect/features/onboarding/widgets/steps/location_manual_step.dart';
 import 'package:allumni_connect/features/onboarding/widgets/steps/security_step.dart';
 import 'package:allumni_connect/features/onboarding/widgets/steps/confirmation_step.dart';
+
+import '../../../core/utils/custom_exceptions.dart';
+import '../../../core/widgets/app_snackbar.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -24,6 +28,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   static const int _locationManual = 4;
   static const int _security = 5;
   static const int _confirmation = 6;
+
+  LocationResult? _result;
 
   final PageController _controller = PageController();
   int _current = _welcome;
@@ -48,6 +54,72 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _handleHardwareBack() async {
     if (_current == _welcome || _current == _confirmation) return;
     await _goTo(_current - 1);
+  }
+
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return PopScope(
+          // empêcher la fermeture avec l'option de retour Android/ios
+          canPop: false,
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 20),
+                  Flexible(
+                    child: Text(
+                      'Nous prenons votre localisation, veuillez patienter...',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+    AppSnackBar.error(context, message);
+  }
+
+  Future<void> _useCurrentPosition() async {
+    _showLoadingDialog(context);
+
+    try {
+      final result = await LocationService.getCurrentLocation();
+
+      setState(() {
+        _fromGps = true;
+        _result= result;
+      });
+
+      debugPrint("===================>> resultat de la localisation: ville: ${_result?.city}, pays: ${_result?.country}, latitude: ${_result?.latitude}, longitude: ${_result?.longitude}");
+      _goTo(_locationManual);
+    } on LocationPermissionException catch (e) {
+      _showError(e.message);
+    } on LocationServiceException catch (e) {
+      _showError(e.message);
+    } catch (e) {
+      _showError('Une erreur est survenue.');
+    } finally {
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   @override
@@ -75,8 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               LocationChoiceStep(
                 onChooseGps: () {
-                  setState(() => _fromGps = true);
-                  _goTo(_locationManual);
+                  _useCurrentPosition();
                 },
                 onChooseManual: () {
                   setState(() => _fromGps = false);
@@ -86,6 +157,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               LocationManualStep(
                 fromGps: _fromGps,
+                locationResult: _result,
                 onContinue: () => _goTo(_security),
                 onBack: () => _goTo(_locationChoice),
               ),
