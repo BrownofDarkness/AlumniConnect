@@ -9,6 +9,7 @@ import 'package:allumni_connect/features/detail/widgets/contact_shortcut.dart';
 import 'package:allumni_connect/features/detail/widgets/detail_header.dart';
 import 'package:allumni_connect/features/detail/widgets/detail_section_card.dart';
 import 'package:allumni_connect/features/directory/providers/directory_providers.dart';
+import 'package:allumni_connect/features/onboarding/widgets/map_preview.dart';
 import 'package:allumni_connect/models/alumni.dart';
 
 /// Fiche détaillée d'un alumni : identité, parcours, biographie,
@@ -64,7 +65,14 @@ class AlumniDetailScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Fiche Alumni')),
+      appBar: AppBar(
+        title: const Text('Fiche Alumni'),
+        backgroundColor: AppColors.navy,
+        foregroundColor: AppColors.white,
+        iconTheme: const IconThemeData(color: AppColors.white),
+        centerTitle: false,
+        titleTextStyle: AppTextStyles.heading.copyWith(color: AppColors.white),
+      ),
       backgroundColor: AppColors.cream,
       body: ListView(
         padding: EdgeInsets.zero,
@@ -124,8 +132,10 @@ class AlumniDetailScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: AppSpacing.xl),
+                  const DetailSectionTitle(title: 'Parcours académique & pro'),
+                  const SizedBox(height: AppSpacing.lg),
                   DetailSectionCard(
-                    title: 'Parcours académique & pro',
                     child: Column(
                       children: [
                         DetailInfoRow(
@@ -133,16 +143,19 @@ class AlumniDetailScreen extends ConsumerWidget {
                           label: 'Filière',
                           value: alumni.filiere,
                         ),
+                        const Divider(),
                         DetailInfoRow(
                           icon: Icons.work_outline_rounded,
                           label: 'Poste actuel',
                           value: alumni.posteActuel,
                         ),
+                        const Divider(),
                         DetailInfoRow(
                           icon: Icons.apartment_rounded,
                           label: 'Entreprise',
                           value: alumni.entreprise,
                         ),
+                        const Divider(),
                         DetailInfoRow(
                           icon: Icons.calendar_today_outlined,
                           label: 'Promotion',
@@ -151,17 +164,19 @@ class AlumniDetailScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.xl),
+                  const DetailSectionTitle(title: 'Biographie'),
                   const SizedBox(height: AppSpacing.lg),
                   DetailSectionCard(
-                    title: 'Biographie',
                     child: Text(
                       alumni.bio,
                       style: AppTextStyles.body.copyWith(color: AppColors.ink),
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.xl),
+                  const DetailSectionTitle(title: 'Coordonnées'),
                   const SizedBox(height: AppSpacing.lg),
                   DetailSectionCard(
-                    title: 'Coordonnées',
                     child: Column(
                       children: [
                         DetailInfoRow(
@@ -169,11 +184,13 @@ class AlumniDetailScreen extends ConsumerWidget {
                           label: 'Email professionnel',
                           value: alumni.email,
                         ),
+                        const Divider(),
                         DetailInfoRow(
                           icon: Icons.call_outlined,
                           label: 'Téléphone',
                           value: alumni.telephone,
                         ),
+                        const Divider(),
                         DetailInfoRow(
                           icon: Icons.business_center_outlined,
                           label: 'LinkedIn',
@@ -182,15 +199,15 @@ class AlumniDetailScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.xl),
+                  DetailSectionTitle(key: _localisationKey, title: 'Localisation'),
                   const SizedBox(height: AppSpacing.lg),
                   DetailSectionCard(
-                    key: _localisationKey,
-                    title: 'Localisation',
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _MapPreviewPlaceholder(),
-                        const SizedBox(height: AppSpacing.sm),
+                        const MapPreview(height: 140),
+                        const SizedBox(height: AppSpacing.md),
                         Row(
                           children: [
                             const Icon(Icons.place_outlined, size: 16, color: AppColors.muted),
@@ -201,16 +218,18 @@ class AlumniDetailScreen extends ConsumerWidget {
                                 style: AppTextStyles.bodySm.copyWith(color: AppColors.muted),
                               ),
                             ),
+                            const SizedBox(width: AppSpacing.sm),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(0, 40),
+                                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                                textStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                              onPressed: () => _launch(context, Uri.parse(alumni.mapsSearchUrl)),
+                              icon: const Icon(Icons.navigation_rounded, size: 16),
+                              label: const Text('S\'y rendre'),
+                            ),
                           ],
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () => _launch(context, Uri.parse(alumni.mapsSearchUrl)),
-                            icon: const Icon(Icons.directions_rounded, size: 18),
-                            label: const Text('S\'y rendre'),
-                          ),
                         ),
                       ],
                     ),
@@ -221,29 +240,6 @@ class AlumniDetailScreen extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Aperçu de carte statique.
-///
-/// TODO : remplacer par une vraie tuile de carte (google_maps_flutter ou
-/// flutter_map) une fois le package retenu par l'équipe pour la feature
-/// carte interactive.
-class _MapPreviewPlaceholder extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 120,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.cream,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: const Center(
-        child: Icon(Icons.location_on_rounded, color: AppColors.primary, size: 28),
       ),
     );
   }
