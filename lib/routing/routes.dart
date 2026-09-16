@@ -10,6 +10,7 @@ class RouteName {
   static const String directory = 'directory';
   static const String alumniDetail = 'alumniDetail';
   static const String map = 'map';
+  static const String itinerary = 'itinerary';
 
   static const String myProfile = 'myProfile';
   static const String editProfile = 'editProfile';

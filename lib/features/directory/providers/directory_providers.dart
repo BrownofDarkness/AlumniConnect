@@ -13,18 +13,34 @@ final Provider<List<Alumni>> alumniListProvider = Provider<List<Alumni>>((ref) {
   return MockAlumniRepository.all;
 });
 
+/// Alumni actuellement connecté (mock), initialisé depuis
+/// [MockAlumniRepository.currentAlumniId] tant que l'authentification n'est
+/// pas branchée à un vrai profil. Modifiable via [update] (écran "Modifier
+/// mon profil") tant qu'il n'y a pas de FirestoreService pour persister.
+class CurrentAlumniNotifier extends Notifier<Alumni> {
+  @override
+  Alumni build() {
+    return ref
+        .watch(alumniListProvider)
+        .firstWhere((a) => a.id == MockAlumniRepository.currentAlumniId);
+  }
+
+  void update(Alumni updated) => state = updated;
+}
+
+final NotifierProvider<CurrentAlumniNotifier, Alumni> currentAlumniProvider =
+    NotifierProvider<CurrentAlumniNotifier, Alumni>(CurrentAlumniNotifier.new);
+
 /// Position de référence de l'alumni connecté, utilisée par le filtre de
-/// proximité géographique — résolue depuis les coordonnées de
-/// [MockAlumniRepository.currentAlumni] tant que l'authentification n'est
-/// pas branchée à un vrai profil.
+/// proximité géographique.
 ///
 /// TODO : remplacer par la position réelle du profil (LocationService /
 /// document Firestore de l'utilisateur connecté).
 final Provider<({double lat, double lng})> referencePositionProvider =
     Provider<({double lat, double lng})>((ref) {
-      final Alumni me = MockAlumniRepository.currentAlumni;
-      return (lat: me.latitude, lng: me.longitude);
-    });
+  final Alumni me = ref.watch(currentAlumniProvider);
+  return (lat: me.latitude, lng: me.longitude);
+});
 
 /// Notifier gérant l'état du panneau de filtres.
 class FiltersNotifier extends Notifier<FiltersState> {

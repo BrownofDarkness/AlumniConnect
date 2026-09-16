@@ -5,6 +5,7 @@ import 'package:allumni_connect/features/auth/screens/forgot_password_screen.dar
 import 'package:allumni_connect/features/onboarding/screens/onboarding_screen.dart';
 import 'package:allumni_connect/features/directory/screens/directory_screen.dart';
 import 'package:allumni_connect/features/detail/screens/alumni_detail_screen.dart';
+import 'package:allumni_connect/features/itinerary/screens/itinerary_screen.dart';
 import 'package:allumni_connect/features/map/screens/map_view_screen.dart';
 import 'package:allumni_connect/features/profile/screens/my_profile_screen.dart';
 import 'package:allumni_connect/features/profile/screens/edit_profile_screen.dart';
@@ -42,6 +43,11 @@ final GoRouter appRouter = GoRouter(
       path: '/${RouteName.alumniDetail}/:id',
       name: RouteName.alumniDetail,
       builder: (context, state) => AlumniDetailScreen(id: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: '/${RouteName.itinerary}/:id',
+      name: RouteName.itinerary,
+      builder: (context, state) => ItineraryScreen(destinationId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: '/${RouteName.addAlumni}',
