@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
@@ -10,6 +11,7 @@ import 'package:allumni_connect/features/detail/widgets/alumni_location_map.dart
 import 'package:allumni_connect/features/detail/widgets/detail_section_card.dart';
 import 'package:allumni_connect/features/directory/providers/directory_providers.dart';
 import 'package:allumni_connect/models/alumni.dart';
+import 'package:allumni_connect/routing/routes.dart';
 
 /// Fiche détaillée d'un alumni : identité, parcours, biographie,
 /// coordonnées, localisation + raccourcis de contact.
@@ -223,7 +225,10 @@ class AlumniDetailScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                                 textStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
                               ),
-                              onPressed: () => _launch(context, Uri.parse(alumni.mapsSearchUrl)),
+                              onPressed: () => context.pushNamed(
+                                RouteName.itinerary,
+                                pathParameters: {'id': alumni.id},
+                              ),
                               icon: const Icon(Icons.navigation_rounded, size: 16),
                               label: const Text('S\'y rendre'),
                             ),

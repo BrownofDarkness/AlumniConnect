@@ -3,9 +3,10 @@ import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 
 class DetailSectionTitle extends StatelessWidget {
-  const DetailSectionTitle({super.key, required this.title});
+  const DetailSectionTitle({super.key, required this.title, this.trailing});
 
   final String title;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +14,15 @@ class DetailSectionTitle extends StatelessWidget {
     return Text(
       title.toUpperCase(),
       style: AppTextStyles.labelCaps.copyWith(color: scheme.onSurfaceVariant),
+    );
+
+    if (trailing == null) return label;
+
+    return Row(
+      children: [
+        Expanded(child: label),
+        trailing!,
+      ],
     );
   }
 }
