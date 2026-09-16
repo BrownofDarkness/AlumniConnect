@@ -46,6 +46,8 @@ dependencies:
   geocoding: ^5.0.0
   permission_handler: 11.4.0
   material_symbols_icons: ^4.2960.0
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
 
 dev_dependencies:
   flutter_test:
