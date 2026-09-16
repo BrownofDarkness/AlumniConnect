@@ -20,13 +20,14 @@ class ProfileLocationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     final Widget row = Row(
       children: [
         Container(
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: AppColors.amberSoft,
+            color: AppColors.amber.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
           child: const Icon(Icons.place_rounded, color: AppColors.amber, size: 18),
@@ -38,17 +39,17 @@ class ProfileLocationRow extends StatelessWidget {
             children: [
               Text(
                 localisation,
-                style: AppTextStyles.body.copyWith(color: AppColors.ink, fontWeight: FontWeight.w600),
+                style: AppTextStyles.body.copyWith(color: scheme.onSurface, fontWeight: FontWeight.w600),
               ),
               Text(
                 caption,
-                style: AppTextStyles.caption.copyWith(color: AppColors.muted),
+                style: AppTextStyles.caption.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
           ),
         ),
         if (onTap != null)
-          const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+          Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
       ],
     );
 

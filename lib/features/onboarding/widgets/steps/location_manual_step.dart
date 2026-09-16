@@ -5,11 +5,12 @@ import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/validators.dart';
 import 'package:allumni_connect/core/widgets/app_button.dart';
 import 'package:allumni_connect/core/widgets/app_text_field.dart';
+import 'package:allumni_connect/features/onboarding/models/onboarding_data.dart';
 import 'package:allumni_connect/features/onboarding/widgets/map_preview.dart';
 import 'package:allumni_connect/features/onboarding/widgets/onboarding_step_shell.dart';
 
 class LocationManualStep extends StatefulWidget {
-  final VoidCallback onContinue;
+  final void Function(LocationData) onContinue;
   final VoidCallback onBack;
   final bool fromGps;
   final LocationResult? locationResult;
@@ -71,7 +72,11 @@ class _LocationManualStepState extends State<LocationManualStep> with AutomaticK
   void _handleContinue() {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState?.validate() ?? false) {
-      widget.onContinue();
+      widget.onContinue(LocationData(
+        adresse: _adresse.text.trim(),
+        ville: _ville.text.trim(),
+        pays: _pays.text.trim(),
+      ));
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:allumni_connect/firebase_options.dart';
 import 'package:allumni_connect/routing/app_router.dart';
+import 'package:allumni_connect/core/providers/theme_mode_provider.dart';
 import 'package:allumni_connect/core/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -22,25 +23,27 @@ Future<void> main() async {
   );
 }
 
-class AllumniConnectApp extends StatefulWidget {
+class AllumniConnectApp extends ConsumerStatefulWidget {
   const AllumniConnectApp({super.key});
 
   @override
-  State<AllumniConnectApp> createState() => _AllumniConnectAppState();
+  ConsumerState<AllumniConnectApp> createState() => _AllumniConnectAppState();
 }
 
-class _AllumniConnectAppState extends State<AllumniConnectApp> {
+class _AllumniConnectAppState extends ConsumerState<AllumniConnectApp> {
   @override
   Widget build(BuildContext context) {
+    final router = ref.watch(routerProvider);
+    final ThemeMode themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
     return GestureDetector(
       onTap: hideKeyboard,
       child: MaterialApp.router(
         title: 'AlumniConnect',
         debugShowCheckedModeBanner: false,
-        routerConfig: appRouter,
+        routerConfig: router,
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
-        themeMode: ThemeMode.system,
+        themeMode: themeMode,
       ),
     );
   }

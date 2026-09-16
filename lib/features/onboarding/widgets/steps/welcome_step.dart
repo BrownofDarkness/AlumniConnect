@@ -6,13 +6,11 @@ import 'package:allumni_connect/core/widgets/app_button.dart';
 import 'package:allumni_connect/features/onboarding/widgets/onboarding_step_shell.dart';
 
 class WelcomeStep extends StatelessWidget {
-  final String firstName;
   final VoidCallback onContinue;
 
   const WelcomeStep({
     super.key,
     required this.onContinue,
-    this.firstName = 'Karim',
   });
 
   @override
@@ -31,7 +29,7 @@ class WelcomeStep extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Bienvenue\n$firstName',
+                'Bienvenue\nsur AlumniConnect',
                 style: AppTextStyles.displayXL.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

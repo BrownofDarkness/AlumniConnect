@@ -43,6 +43,7 @@ class _FiltersBottomSheetState extends ConsumerState<FiltersBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     final FiltersState filters = ref.watch(filtersProvider);
     final FiltersNotifier notifier = ref.read(filtersProvider.notifier);
     final List<String> countries = ref.watch(availableCountriesProvider);
@@ -63,9 +64,9 @@ class _FiltersBottomSheetState extends ConsumerState<FiltersBottomSheet> {
       expand: false,
       builder: (context, scrollController) {
         return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+          decoration: BoxDecoration(
+            color: scheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
           ),
           child: Column(
             children: [
@@ -74,7 +75,7 @@ class _FiltersBottomSheetState extends ConsumerState<FiltersBottomSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.divider,
+                  color: scheme.outline,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -84,12 +85,12 @@ class _FiltersBottomSheetState extends ConsumerState<FiltersBottomSheet> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.tune_rounded, color: AppColors.navy),
+                    Icon(Icons.tune_rounded, color: scheme.onSurface),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         'Filtres de recherche',
-                        style: AppTextStyles.title.copyWith(color: AppColors.navy),
+                        style: AppTextStyles.title.copyWith(color: scheme.onSurface),
                       ),
                     ),
                     TextButton(
@@ -241,6 +242,7 @@ class _ProximityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -268,12 +270,12 @@ class _ProximityCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Proximité géographique',
-                        style: AppTextStyles.heading.copyWith(color: AppColors.ink)),
+                        style: AppTextStyles.heading.copyWith(color: scheme.onSurface)),
                     const SizedBox(height: 2),
                     Text(
                       'Localisation en temps réel pour alumni nomades ou en '
                       'déplacement professionnel.',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.muted),
+                      style: AppTextStyles.caption.copyWith(color: scheme.onSurfaceVariant),
                     ),
                   ],
                 ),
@@ -295,7 +297,7 @@ class _ProximityCard extends StatelessWidget {
                     const Icon(Icons.adjust_rounded, size: 16, color: AppColors.success),
                     const SizedBox(width: AppSpacing.xs),
                     Text('Rayon de détection',
-                        style: AppTextStyles.bodySm.copyWith(color: AppColors.ink)),
+                        style: AppTextStyles.bodySm.copyWith(color: scheme.onSurface)),
                   ],
                 ),
                 _ChoiceChipPill(label: '${radiusKm.round()} km', selected: true, onTap: () {}),
@@ -331,14 +333,15 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppColors.navy),
+        Icon(icon, size: 18, color: scheme.onSurface),
         const SizedBox(width: AppSpacing.xs),
-        Text(title, style: AppTextStyles.heading.copyWith(color: AppColors.navy)),
+        Text(title, style: AppTextStyles.heading.copyWith(color: scheme.onSurface)),
         if (trailing != null) ...[
           const Spacer(),
-          Text(trailing!, style: AppTextStyles.caption.copyWith(color: AppColors.muted)),
+          Text(trailing!, style: AppTextStyles.caption.copyWith(color: scheme.onSurfaceVariant)),
         ],
       ],
     );
@@ -354,8 +357,9 @@ class _ChoiceChipPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Material(
-      color: selected ? AppColors.navy : AppColors.white,
+      color: selected ? scheme.primary : scheme.surface,
       borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       child: InkWell(
         onTap: onTap,
@@ -364,12 +368,12 @@ class _ChoiceChipPill extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-            border: Border.all(color: selected ? Colors.transparent : AppColors.divider),
+            border: Border.all(color: selected ? Colors.transparent : scheme.outline),
           ),
           child: Text(
             label,
             style: AppTextStyles.bodySm.copyWith(
-              color: selected ? Colors.white : AppColors.ink,
+              color: selected ? scheme.onPrimary : scheme.onSurface,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
             ),
           ),
@@ -403,8 +407,9 @@ class _FiliereChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Material(
-      color: selected ? AppColors.success : AppColors.white,
+      color: selected ? AppColors.success : scheme.surface,
       borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       child: InkWell(
         onTap: onTap,
@@ -413,17 +418,17 @@ class _FiliereChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-            border: Border.all(color: selected ? Colors.transparent : AppColors.divider),
+            border: Border.all(color: selected ? Colors.transparent : scheme.outline),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(_icon, size: 16, color: selected ? Colors.white : AppColors.muted),
+              Icon(_icon, size: 16, color: selected ? Colors.white : scheme.onSurfaceVariant),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 label,
                 style: AppTextStyles.bodySm.copyWith(
-                  color: selected ? Colors.white : AppColors.ink,
+                  color: selected ? Colors.white : scheme.onSurface,
                   fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
@@ -442,10 +447,11 @@ class _ApplyBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.lg),
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.divider)),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: scheme.outline)),
       ),
       child: SafeArea(
         top: false,

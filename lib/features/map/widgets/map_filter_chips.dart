@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 
@@ -51,8 +50,9 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Material(
-      color: AppColors.primary.withValues(alpha: 0.08),
+      color: scheme.primary.withValues(alpha: 0.12),
       borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       child: InkWell(
         onTap: onTap,
@@ -62,15 +62,15 @@ class _FilterChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 16, color: AppColors.primary),
+              Icon(icon, size: 16, color: scheme.primary),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 label,
-                style: AppTextStyles.bodySm.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                style: AppTextStyles.bodySm.copyWith(color: scheme.primary, fontWeight: FontWeight.w600),
               ),
               if (trailing != null) ...[
                 const SizedBox(width: 4),
-                Icon(trailing, size: 18, color: AppColors.primary),
+                Icon(trailing, size: 18, color: scheme.primary),
               ],
             ],
           ),

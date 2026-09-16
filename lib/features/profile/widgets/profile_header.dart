@@ -23,17 +23,23 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final List<Color> gradient = isDark
+        ? const [Color(0xFF1E3670), AppColors.navy]
+        : const [AppColors.primary, AppColors.navy];
+
     return Column(
       children: [
         Container(
           width: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.primary, AppColors.navy],
+              colors: gradient,
             ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(AppSpacing.radiusXl)),
+            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(AppSpacing.radiusXl)),
           ),
           child: SafeArea(
             bottom: false,
@@ -54,7 +60,7 @@ class ProfileHeader extends StatelessWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.white,
+                  color: scheme.surface,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.12),
@@ -65,13 +71,13 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 child: CircleAvatar(
                   radius: _avatarRadius,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  backgroundColor: scheme.primary.withValues(alpha: 0.15),
                   backgroundImage:
                       alumni.photoUrl != null ? NetworkImage(alumni.photoUrl!) : null,
                   child: alumni.photoUrl == null
                       ? Text(
                           alumni.initiales,
-                          style: AppTextStyles.display.copyWith(color: AppColors.primary),
+                          style: AppTextStyles.display.copyWith(color: scheme.primary),
                         )
                       : null,
                 ),
@@ -79,18 +85,18 @@ class ProfileHeader extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               Text(
                 alumni.nomComplet,
-                style: AppTextStyles.title.copyWith(color: AppColors.ink),
+                style: AppTextStyles.title.copyWith(color: scheme.onSurface),
               ),
               const SizedBox(height: 2),
               Text(
                 'Promotion ${alumni.promotion}',
-                style: AppTextStyles.bodySm.copyWith(color: AppColors.muted),
+                style: AppTextStyles.bodySm.copyWith(color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 '${alumni.posteActuel} chez ${alumni.entreprise}',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.body.copyWith(color: AppColors.ink, fontWeight: FontWeight.w600),
+                style: AppTextStyles.body.copyWith(color: scheme.onSurface, fontWeight: FontWeight.w600),
               ),
             ],
           ),

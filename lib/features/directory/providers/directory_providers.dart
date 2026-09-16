@@ -1,48 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:allumni_connect/core/utils/geo_utils.dart';
-import 'package:allumni_connect/models/alumni.dart';
-import 'package:allumni_connect/features/directory/data/mock_alumni_repository.dart';
+import 'package:allumni_connect/features/auth/providers/auth_providers.dart';
 import 'package:allumni_connect/features/directory/providers/filters_state.dart';
+import 'package:allumni_connect/models/alumni.dart';
 
-/// Dataset alumni.
-///
-/// TODO : remplacer ce Provider par un StreamProvider branché sur
-/// FirestoreService une fois le service implémenté. Le reste de l'UI
-/// (filteredAlumniProvider, écrans) n'aura pas à changer.
-final Provider<List<Alumni>> alumniListProvider = Provider<List<Alumni>>((ref) {
-  return MockAlumniRepository.all;
+final StreamProvider<List<Alumni>> alumniStreamProvider =
+    StreamProvider<List<Alumni>>((ref) {
+  return ref.watch(alumniRepositoryProvider).watchAllAlumni();
 });
 
-/// Alumni actuellement connecté (mock), initialisé depuis
-/// [MockAlumniRepository.currentAlumniId] tant que l'authentification n'est
-/// pas branchée à un vrai profil. Modifiable via [update] (écran "Modifier
-/// mon profil") tant qu'il n'y a pas de FirestoreService pour persister.
-class CurrentAlumniNotifier extends Notifier<Alumni> {
-  @override
-  Alumni build() {
-    return ref
-        .watch(alumniListProvider)
-        .firstWhere((a) => a.id == MockAlumniRepository.currentAlumniId);
-  }
+final Provider<List<Alumni>> alumniListProvider = Provider<List<Alumni>>((ref) {
+  return ref.watch(alumniStreamProvider).value ?? const <Alumni>[];
+});
 
-  void update(Alumni updated) => state = updated;
-}
-
-final NotifierProvider<CurrentAlumniNotifier, Alumni> currentAlumniProvider =
-    NotifierProvider<CurrentAlumniNotifier, Alumni>(CurrentAlumniNotifier.new);
-
-/// Position de référence de l'alumni connecté, utilisée par le filtre de
-/// proximité géographique.
-///
-/// TODO : remplacer par la position réelle du profil (LocationService /
-/// document Firestore de l'utilisateur connecté).
-final Provider<({double lat, double lng})> referencePositionProvider =
-    Provider<({double lat, double lng})>((ref) {
-  final Alumni me = ref.watch(currentAlumniProvider);
+final Provider<({double lat, double lng})?> referencePositionProvider =
+    Provider<({double lat, double lng})?>((ref) {
+  final me = ref.watch(currentAlumniProvider).value;
+  if (me == null) return null;
   return (lat: me.latitude, lng: me.longitude);
 });
 
-/// Notifier gérant l'état du panneau de filtres.
 class FiltersNotifier extends Notifier<FiltersState> {
   @override
   FiltersState build() => FiltersState.initial;
@@ -88,22 +65,14 @@ class FiltersNotifier extends Notifier<FiltersState> {
 final NotifierProvider<FiltersNotifier, FiltersState> filtersProvider =
     NotifierProvider<FiltersNotifier, FiltersState>(FiltersNotifier.new);
 
-/// Liste alumni filtrée + triée en fonction de [filtersProvider].
-///
-/// Le tri par proximité (du plus proche au plus éloigné) ne s'applique
-/// que lorsque le filtre de proximité est actif, conformément au parcours
-/// utilisateur défini dans la documentation produit.
-final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((
-  ref,
-) {
+final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((ref) {
   final List<Alumni> all = ref.watch(alumniListProvider);
   final FiltersState filters = ref.watch(filtersProvider);
-  final ({double lat, double lng}) refPos = ref.watch(
-    referencePositionProvider,
-  );
+  final ({double lat, double lng})? refPos = ref.watch(referencePositionProvider);
+  final String? myUid = ref.watch(currentUserProvider)?.uid;
 
   Iterable<Alumni> result = all.where(
-    (a) => a.profilComplet && a.id != MockAlumniRepository.currentAlumniId,
+    (a) => a.profilComplet && a.id != myUid,
   );
 
   if (filters.query.trim().isNotEmpty) {
@@ -136,31 +105,31 @@ final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((
 
   List<Alumni> list = result.toList();
 
-  if (filters.proximityEnabled) {
-    list =
-        list.where((a) {
-          final double d = GeoUtils.distanceKm(
-            lat1: refPos.lat,
-            lon1: refPos.lng,
-            lat2: a.latitude,
-            lon2: a.longitude,
-          );
-          return d <= filters.radiusKm;
-        }).toList()..sort((a, b) {
-          final double da = GeoUtils.distanceKm(
-            lat1: refPos.lat,
-            lon1: refPos.lng,
-            lat2: a.latitude,
-            lon2: a.longitude,
-          );
-          final double db = GeoUtils.distanceKm(
-            lat1: refPos.lat,
-            lon1: refPos.lng,
-            lat2: b.latitude,
-            lon2: b.longitude,
-          );
-          return da.compareTo(db);
-        });
+  if (filters.proximityEnabled && refPos != null) {
+    list = list.where((a) {
+      final double d = GeoUtils.distanceKm(
+        lat1: refPos.lat,
+        lon1: refPos.lng,
+        lat2: a.latitude,
+        lon2: a.longitude,
+      );
+      return d <= filters.radiusKm;
+    }).toList()
+      ..sort((a, b) {
+        final double da = GeoUtils.distanceKm(
+          lat1: refPos.lat,
+          lon1: refPos.lng,
+          lat2: a.latitude,
+          lon2: a.longitude,
+        );
+        final double db = GeoUtils.distanceKm(
+          lat1: refPos.lat,
+          lon1: refPos.lng,
+          lat2: b.latitude,
+          lon2: b.longitude,
+        );
+        return da.compareTo(db);
+      });
   } else {
     list.sort((a, b) => a.nom.compareTo(b.nom));
   }
@@ -168,12 +137,10 @@ final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((
   return list;
 });
 
-/// Distance (km) entre un alumni et la position de référence — utilisé pour
-/// afficher "À 2.4 km" sur la fiche détaillée / la carte.
-final distanceKmProvider = Provider.family<double, Alumni>((ref, alumni) {
-  final ({double lat, double lng}) refPos = ref.watch(
-    referencePositionProvider,
-  );
+final distanceKmProvider =
+    Provider.family<double, Alumni>((ref, alumni) {
+  final ({double lat, double lng})? refPos = ref.watch(referencePositionProvider);
+  if (refPos == null) return double.infinity;
   return GeoUtils.distanceKm(
     lat1: refPos.lat,
     lon1: refPos.lng,
@@ -182,8 +149,6 @@ final distanceKmProvider = Provider.family<double, Alumni>((ref, alumni) {
   );
 });
 
-/// Nombre d'alumni par ville (dataset complet, indépendant des filtres
-/// actifs) — utilisé pour les compteurs à côté de chaque chip ville.
 final Provider<Map<String, int>> cityCountsProvider =
     Provider<Map<String, int>>((ref) {
       final List<Alumni> all = ref.watch(alumniListProvider);
@@ -194,8 +159,6 @@ final Provider<Map<String, int>> cityCountsProvider =
       return counts;
     });
 
-/// Liste des pays représentés dans la communauté, triée par nombre
-/// d'alumni décroissant.
 final Provider<List<String>> availableCountriesProvider =
     Provider<List<String>>((ref) {
       final List<Alumni> all = ref.watch(alumniListProvider);
@@ -208,12 +171,8 @@ final Provider<List<String>> availableCountriesProvider =
       return countries;
     });
 
-/// Villes disponibles pour un pays donné (ou toutes si `country` est null),
-/// triées par nombre d'alumni décroissant.
-final availableCitiesProvider = Provider.family<List<String>, String?>((
-  ref,
-  country,
-) {
+final availableCitiesProvider =
+    Provider.family<List<String>, String?>((ref, country) {
   final List<Alumni> all = ref.watch(alumniListProvider);
   final Map<String, int> counts = <String, int>{};
   for (final Alumni a in all) {
@@ -225,9 +184,8 @@ final availableCitiesProvider = Provider.family<List<String>, String?>((
   return cities;
 });
 
-/// Récupère un alumni par id dans le dataset courant (mock ou Firestore
-/// plus tard) — utilisé par la fiche détaillée.
-final alumniByIdProvider = Provider.family<Alumni?, String>((ref, id) {
+final alumniByIdProvider =
+    Provider.family<Alumni?, String>((ref, id) {
   final List<Alumni> all = ref.watch(alumniListProvider);
   for (final Alumni a in all) {
     if (a.id == id) return a;

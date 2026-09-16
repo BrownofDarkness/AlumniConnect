@@ -28,10 +28,11 @@ class AlumniMapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: scheme.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
         boxShadow: [
           BoxShadow(
@@ -50,7 +51,7 @@ class AlumniMapCard extends StatelessWidget {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.divider,
+                color: scheme.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -64,13 +65,13 @@ class AlumniMapCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                    backgroundColor: scheme.primary.withValues(alpha: 0.15),
                     backgroundImage:
                         alumni.photoUrl != null ? NetworkImage(alumni.photoUrl!) : null,
                     child: alumni.photoUrl == null
                         ? Text(
                             alumni.initiales,
-                            style: AppTextStyles.heading.copyWith(color: AppColors.primary),
+                            style: AppTextStyles.heading.copyWith(color: scheme.primary),
                           )
                         : null,
                   ),
@@ -96,7 +97,7 @@ class AlumniMapCard extends StatelessWidget {
                         Flexible(
                           child: Text(
                             alumni.nomComplet,
-                            style: AppTextStyles.heading.copyWith(color: AppColors.ink),
+                            style: AppTextStyles.heading.copyWith(color: scheme.onSurface),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -105,13 +106,13 @@ class AlumniMapCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: 1),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
+                            color: scheme.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                           ),
                           child: Text(
                             "P'${alumni.promotion.length >= 2 ? alumni.promotion.substring(2) : alumni.promotion}",
                             style: AppTextStyles.caption.copyWith(
-                              color: AppColors.primary,
+                              color: scheme.primary,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -121,19 +122,19 @@ class AlumniMapCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '${alumni.posteActuel} @ ${alumni.entreprise}',
-                      style: AppTextStyles.bodySm.copyWith(color: AppColors.muted),
+                      style: AppTextStyles.bodySm.copyWith(color: scheme.onSurfaceVariant),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        const Icon(Icons.place_outlined, size: 14, color: AppColors.muted),
+                        Icon(Icons.place_outlined, size: 14, color: scheme.onSurfaceVariant),
                         const SizedBox(width: 2),
                         Expanded(
                           child: Text(
                             'À $distanceLabel · ${alumni.ville}, ${alumni.adresse}',
-                            style: AppTextStyles.caption.copyWith(color: AppColors.muted),
+                            style: AppTextStyles.caption.copyWith(color: scheme.onSurfaceVariant),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -149,10 +150,10 @@ class AlumniMapCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppColors.cream,
+                    color: scheme.onSurface.withValues(alpha: 0.06),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close_rounded, size: 18, color: AppColors.muted),
+                  child: Icon(Icons.close_rounded, size: 18, color: scheme.onSurfaceVariant),
                 ),
               ),
             ],
@@ -193,7 +194,7 @@ class AlumniMapCard extends StatelessWidget {
                   onPressed: onProfile,
                   style: OutlinedButton.styleFrom(
                     side: BorderSide.none,
-                    backgroundColor: AppColors.cream,
+                    backgroundColor: scheme.onSurface.withValues(alpha: 0.06),
                   ),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -222,24 +223,25 @@ class _InfoChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.cream,
+        color: scheme.onSurface.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.primary),
+          Icon(icon, size: 18, color: scheme.primary),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.muted)),
+                Text(label, style: AppTextStyles.caption.copyWith(color: scheme.onSurfaceVariant)),
                 Text(
                   value,
-                  style: AppTextStyles.bodySm.copyWith(color: AppColors.ink, fontWeight: FontWeight.w600),
+                  style: AppTextStyles.bodySm.copyWith(color: scheme.onSurface, fontWeight: FontWeight.w600),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -260,13 +262,14 @@ class _SquareIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Material(
-      color: AppColors.cream,
+      color: scheme.onSurface.withValues(alpha: 0.06),
       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        child: SizedBox(width: 52, height: 52, child: Icon(icon, color: AppColors.primary)),
+        child: SizedBox(width: 52, height: 52, child: Icon(icon, color: scheme.primary)),
       ),
     );
   }

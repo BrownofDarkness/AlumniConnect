@@ -35,7 +35,8 @@ final NotifierProvider<SelectedAlumniNotifier, String?> selectedAlumniIdProvider
 final Provider<List<Alumni>> nearbyAlumniProvider = Provider<List<Alumni>>((ref) {
   final List<Alumni> filtered = ref.watch(filteredAlumniProvider);
   final double radiusKm = ref.watch(mapRadiusKmProvider);
-  final ({double lat, double lng}) refPos = ref.watch(referencePositionProvider);
+  final ({double lat, double lng})? refPos = ref.watch(referencePositionProvider);
+  if (refPos == null) return const <Alumni>[];
 
   double distanceTo(Alumni a) => GeoUtils.distanceKm(
         lat1: refPos.lat,
@@ -56,9 +57,10 @@ final Provider<Alumni?> selectedAlumniProvider = Provider<Alumni?>((ref) {
   return ref.watch(alumniByIdProvider(id));
 });
 
-/// Centre de la carte = position de référence (mock en attendant le
-/// branchement GPS temps réel, voir [referencePositionProvider]).
+const LatLng _defaultMapCenter = LatLng(4.0611, 9.7529);
+
 final Provider<LatLng> mapCenterProvider = Provider<LatLng>((ref) {
-  final ({double lat, double lng}) refPos = ref.watch(referencePositionProvider);
+  final ({double lat, double lng})? refPos = ref.watch(referencePositionProvider);
+  if (refPos == null) return _defaultMapCenter;
   return LatLng(refPos.lat, refPos.lng);
 });

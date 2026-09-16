@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 
-/// Titre de section (label uppercase en bleu) affiché au-dessus d'une
-/// [DetailSectionCard], en dehors de son cadre blanc. [trailing] permet
-/// d'ajouter une action alignée à droite (ex : icône de modification).
 class DetailSectionTitle extends StatelessWidget {
   const DetailSectionTitle({super.key, required this.title, this.trailing});
 
@@ -14,24 +10,14 @@ class DetailSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Text label = Text(
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return Text(
       title.toUpperCase(),
-      style: AppTextStyles.labelCaps.copyWith(color: AppColors.primary),
-    );
-
-    if (trailing == null) return label;
-
-    return Row(
-      children: [
-        Expanded(child: label),
-        trailing!,
-      ],
+      style: AppTextStyles.labelCaps.copyWith(color: scheme.onSurfaceVariant),
     );
   }
 }
 
-/// Carte de section blanche réutilisée dans la fiche alumni
-/// (Parcours, Biographie, Coordonnées, Localisation).
 class DetailSectionCard extends StatelessWidget {
   const DetailSectionCard({
     super.key,
@@ -42,21 +28,20 @@ class DetailSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: scheme.outline),
       ),
       child: child,
     );
   }
 }
 
-/// Ligne icône + label + valeur, utilisée dans les cartes "Parcours" et
-/// "Coordonnées".
 class DetailInfoRow extends StatelessWidget {
   const DetailInfoRow({
     super.key,
@@ -71,12 +56,13 @@ class DetailInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: AppColors.muted),
+          Icon(icon, size: 18, color: scheme.onSurfaceVariant),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
@@ -84,10 +70,10 @@ class DetailInfoRow extends StatelessWidget {
               children: [
                 Text(
                   label.toUpperCase(),
-                  style: AppTextStyles.labelCaps.copyWith(color: AppColors.muted, fontSize: 10),
+                  style: AppTextStyles.labelCaps.copyWith(color: scheme.onSurfaceVariant, fontSize: 10),
                 ),
                 const SizedBox(height: 2),
-                Text(value, style: AppTextStyles.body.copyWith(color: AppColors.ink)),
+                Text(value, style: AppTextStyles.body.copyWith(color: scheme.onSurface)),
               ],
             ),
           ),

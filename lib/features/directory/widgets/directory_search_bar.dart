@@ -69,7 +69,7 @@ class _FilterButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             border: Border.all(
-              color: isActive ? Colors.transparent : AppColors.divider,
+              color: isActive ? Colors.transparent : scheme.outline,
             ),
           ),
           child: Stack(
@@ -78,7 +78,7 @@ class _FilterButton extends StatelessWidget {
               Center(
                 child: Icon(
                   Icons.tune_rounded,
-                  color: isActive ? Colors.white : scheme.onSurface,
+                  color: isActive ? scheme.onPrimary : scheme.onSurface,
                   size: 22,
                 ),
               ),

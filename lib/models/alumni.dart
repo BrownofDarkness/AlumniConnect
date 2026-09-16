@@ -1,7 +1,3 @@
-/// Modèle représentant un alumni de la communauté.
-///
-/// Correspond à la structure Firestore définie dans la doc technique.
-/// TODO : ajouter fromMap / toMap pour la sérialisation Firestore.
 class Alumni {
   final String id;
   final String nom;
@@ -27,6 +23,9 @@ class Alumni {
   final bool visibiliteLocalisation;
   final bool profilComplet;
 
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
   const Alumni({
     required this.id,
     required this.nom,
@@ -48,7 +47,87 @@ class Alumni {
     this.visibiliteProfil = true,
     this.visibiliteLocalisation = true,
     this.profilComplet = false,
+    this.createdAt,
+    this.updatedAt,
   });
+
+  factory Alumni.newProfile({
+    required String id,
+    required String email,
+  }) {
+    return Alumni(
+      id: id,
+      nom: '',
+      prenom: '',
+      promotion: '',
+      filiere: '',
+      posteActuel: '',
+      entreprise: '',
+      bio: '',
+      email: email,
+      telephone: '',
+      linkedin: '',
+      latitude: 0,
+      longitude: 0,
+      adresse: '',
+      ville: '',
+      pays: '',
+      profilComplet: false,
+    );
+  }
+
+  factory Alumni.fromMap(String id, Map<String, dynamic> map) {
+    return Alumni(
+      id: id,
+      nom: (map['nom'] as String?) ?? '',
+      prenom: (map['prenom'] as String?) ?? '',
+      photoUrl: map['photoUrl'] as String?,
+      promotion: (map['promotion'] as String?) ?? '',
+      filiere: (map['filiere'] as String?) ?? '',
+      posteActuel: (map['posteActuel'] as String?) ?? '',
+      entreprise: (map['entreprise'] as String?) ?? '',
+      bio: (map['bio'] as String?) ?? '',
+      email: (map['email'] as String?) ?? '',
+      telephone: (map['telephone'] as String?) ?? '',
+      linkedin: (map['linkedin'] as String?) ?? '',
+      latitude: (map['latitude'] as num?)?.toDouble() ?? 0,
+      longitude: (map['longitude'] as num?)?.toDouble() ?? 0,
+      adresse: (map['adresse'] as String?) ?? '',
+      ville: (map['ville'] as String?) ?? '',
+      pays: (map['pays'] as String?) ?? '',
+      visibiliteProfil: (map['visibiliteProfil'] as bool?) ?? true,
+      visibiliteLocalisation: (map['visibiliteLocalisation'] as bool?) ?? true,
+      profilComplet: (map['profilComplet'] as bool?) ?? false,
+      createdAt: _toDateTime(map['createdAt']),
+      updatedAt: _toDateTime(map['updatedAt']),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'nom': nom,
+      'prenom': prenom,
+      'photoUrl': photoUrl,
+      'promotion': promotion,
+      'filiere': filiere,
+      'posteActuel': posteActuel,
+      'entreprise': entreprise,
+      'bio': bio,
+      'email': email,
+      'telephone': telephone,
+      'linkedin': linkedin,
+      'latitude': latitude,
+      'longitude': longitude,
+      'adresse': adresse,
+      'ville': ville,
+      'pays': pays,
+      'visibiliteProfil': visibiliteProfil,
+      'visibiliteLocalisation': visibiliteLocalisation,
+      'profilComplet': profilComplet,
+      if (createdAt != null) 'createdAt': createdAt,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+    };
+  }
 
   Alumni copyWith({
     String? nom,
@@ -70,6 +149,8 @@ class Alumni {
     bool? visibiliteProfil,
     bool? visibiliteLocalisation,
     bool? profilComplet,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return Alumni(
       id: id,
@@ -92,6 +173,18 @@ class Alumni {
       visibiliteProfil: visibiliteProfil ?? this.visibiliteProfil,
       visibiliteLocalisation: visibiliteLocalisation ?? this.visibiliteLocalisation,
       profilComplet: profilComplet ?? this.profilComplet,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  static DateTime? _toDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    try {
+      return (value as dynamic).toDate() as DateTime;
+    } catch (_) {
+      return null;
+    }
   }
 }

@@ -8,8 +8,13 @@ import 'package:allumni_connect/features/onboarding/widgets/onboarding_step_shel
 
 class ConfirmationStep extends StatelessWidget {
   final VoidCallback onFinish;
+  final bool submitting;
 
-  const ConfirmationStep({super.key, required this.onFinish});
+  const ConfirmationStep({
+    super.key,
+    required this.onFinish,
+    this.submitting = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +26,7 @@ class ConfirmationStep extends StatelessWidget {
       bottomAction: AppButton.primary(
         label: 'Découvrir l\'annuaire',
         onPressed: onFinish,
+        state: submitting ? ButtonState.loading : ButtonState.enabled,
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 28),

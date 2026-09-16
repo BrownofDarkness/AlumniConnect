@@ -5,14 +5,13 @@ import 'package:latlong2/latlong.dart';
 import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/geo_utils.dart';
+import 'package:allumni_connect/features/auth/providers/auth_providers.dart';
 import 'package:allumni_connect/features/directory/providers/directory_providers.dart';
 import 'package:allumni_connect/features/itinerary/widgets/itinerary_route_card.dart';
 import 'package:allumni_connect/features/map/widgets/alumni_map_marker.dart';
 import 'package:allumni_connect/features/map/widgets/user_location_marker.dart';
 import 'package:allumni_connect/models/alumni.dart';
 
-/// Écran Itinéraire : trace la position de l'alumni connecté et celle de
-/// l'alumni sélectionné (ligne "à vol d'oiseau" + distance).
 class ItineraryScreen extends ConsumerWidget {
   const ItineraryScreen({super.key, required this.destinationId});
 
@@ -20,8 +19,16 @@ class ItineraryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Alumni origin = ref.watch(currentAlumniProvider);
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final Alumni? origin = ref.watch(currentAlumniProvider).value;
     final Alumni? destination = ref.watch(alumniByIdProvider(destinationId));
+
+    if (origin == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Itinéraire')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     if (destination == null) {
       return Scaffold(
@@ -29,7 +36,7 @@ class ItineraryScreen extends ConsumerWidget {
         body: Center(
           child: Text(
             'Cet alumni est introuvable.',
-            style: AppTextStyles.body.copyWith(color: AppColors.muted),
+            style: AppTextStyles.body.copyWith(color: scheme.onSurfaceVariant),
           ),
         ),
       );
@@ -46,7 +53,6 @@ class ItineraryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Itinéraire')),
-      backgroundColor: AppColors.cream,
       body: Stack(
         children: [
           Positioned.fill(

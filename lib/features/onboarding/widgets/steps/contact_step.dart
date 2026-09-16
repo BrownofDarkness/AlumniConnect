@@ -4,16 +4,19 @@ import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/widgets/app_button.dart';
 import 'package:allumni_connect/core/widgets/app_text_field.dart';
+import 'package:allumni_connect/features/onboarding/models/onboarding_data.dart';
 import 'package:allumni_connect/features/onboarding/widgets/onboarding_step_shell.dart';
 
 class ContactStep extends StatefulWidget {
-  final VoidCallback onContinue;
+  final void Function(ContactData) onContinue;
   final VoidCallback onBack;
+  final String? personalEmail;
 
   const ContactStep({
     super.key,
     required this.onContinue,
     required this.onBack,
+    this.personalEmail,
   });
 
   @override
@@ -37,8 +40,19 @@ class _ContactStepState extends State<ContactStep> with AutomaticKeepAliveClient
   }
 
   void _usePersonalEmail() {
-    _email.text = 'karim.diallo@exemple.com';
+    final personal = widget.personalEmail;
+    if (personal == null || personal.isEmpty) return;
+    _email.text = personal;
     setState(() {});
+  }
+
+  void _handleContinue() {
+    FocusScope.of(context).unfocus();
+    widget.onContinue(ContactData(
+      email: _email.text.trim(),
+      telephone: _phone.text.trim(),
+      linkedin: _linkedin.text.trim(),
+    ));
   }
 
   @override
@@ -49,7 +63,7 @@ class _ContactStepState extends State<ContactStep> with AutomaticKeepAliveClient
       onBack: widget.onBack,
       bottomAction: AppButton.primary(
         label: 'Continuer',
-        onPressed: widget.onContinue,
+        onPressed: _handleContinue,
       ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(28, 0, 28, 20),
@@ -77,26 +91,29 @@ class _ContactStepState extends State<ContactStep> with AutomaticKeepAliveClient
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: _usePersonalEmail,
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  'Utiliser mon email personnel',
-                  style: AppTextStyles.caption.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
+            if (widget.personalEmail != null && widget.personalEmail!.isNotEmpty) ...[
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: _usePersonalEmail,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    'Utiliser mon email de connexion',
+                    style: AppTextStyles.caption.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
+            ] else
+              const SizedBox(height: 16),
             AppTextField(
               label: 'Téléphone',
               controller: _phone,
