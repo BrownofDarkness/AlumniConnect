@@ -45,6 +45,7 @@ dependencies:
   geolocator: ^14.0.3
   geocoding: ^5.0.0
   permission_handler: 11.4.0
+  material_symbols_icons: ^4.2960.0
 
 dev_dependencies:
   flutter_test:

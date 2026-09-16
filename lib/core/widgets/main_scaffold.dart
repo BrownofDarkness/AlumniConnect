@@ -1,0 +1,58 @@
+import 'package:allumni_connect/core/constants/app_colors.dart';
+import 'package:allumni_connect/core/theme/app_text_styles.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
+class MainScaffold extends StatelessWidget {
+  const MainScaffold({required this.navigationShell, super.key});
+
+  final StatefulNavigationShell navigationShell;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: navigationShell,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: navigationShell.currentIndex,
+        onTap: (index) => navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
+        ),
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        selectedLabelStyle: AppTextStyles.caption.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: AppTextStyles.caption.copyWith(
+          fontWeight: FontWeight.w400,
+        ),
+        elevation: 8,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Symbols.group, fill: 0),
+            activeIcon: Icon(Symbols.group, fill: 1),
+            label: 'Annuaire',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Symbols.location_on, fill: 0),
+            activeIcon: Icon(Symbols.location_on, fill: 1),
+            label: 'Carte',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Symbols.person, fill: 0),
+            activeIcon: Icon(Symbols.person, fill: 1),
+            label: 'Profil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Symbols.settings, fill: 0),
+            activeIcon: Icon(Symbols.settings, fill: 1),
+            label: 'Réglages',
+          ),
+        ],
+      ),
+    );
+  }
+}
