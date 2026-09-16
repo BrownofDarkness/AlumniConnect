@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:allumni_connect/firebase_options.dart';
 import 'package:allumni_connect/routing/app_router.dart';
 import 'package:allumni_connect/core/theme/app_theme.dart';
@@ -14,7 +15,11 @@ Future<void> main() async {
   );
 
   FlutterNativeSplash.remove();
-  runApp(const AllumniConnectApp());
+  runApp(
+    const ProviderScope(
+      child: AllumniConnectApp(),
+    ),
+  );
 }
 
 class AllumniConnectApp extends StatefulWidget {
