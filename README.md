@@ -1,11 +1,19 @@
-# AlumniConnect
+<p align="center">
+  <img src="assets/images/logo.png" alt="AlumniConnect" width="140"/>
+</p>
 
-> L'annuaire vivant de la communauté des anciens — retrouve tes camarades de promotion, où qu'ils soient, dans une app mobile invite-only.
+<h1 align="center">AlumniConnect</h1>
 
-![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
-![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?logo=firebase)
-![Riverpod](https://img.shields.io/badge/Riverpod-3.4-40C4FF)
-![Design](https://img.shields.io/badge/Design-Light%20%2B%20Dark-1A1F2B)
+<p align="center">
+  <em>L'annuaire vivant de la communauté des anciens — retrouve tes camarades de promotion, où qu'ils soient, dans une app mobile invite-only.</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter" alt="Flutter"/>
+  <img src="https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-FFCA28?logo=firebase" alt="Firebase"/>
+  <img src="https://img.shields.io/badge/Riverpod-3.4-40C4FF" alt="Riverpod"/>
+  <img src="https://img.shields.io/badge/Design-Light%20%2B%20Dark-1A1F2B" alt="Design"/>
+</p>
 
 ---
 
