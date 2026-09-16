@@ -7,24 +7,18 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
-import 'package:allumni_connect/core/utils/custom_exceptions.dart';
 import 'package:allumni_connect/core/utils/geo_utils.dart';
 import 'package:allumni_connect/core/utils/alumni_x.dart';
 import 'package:allumni_connect/features/directory/providers/directory_providers.dart';
-import 'package:allumni_connect/features/directory/providers/filters_state.dart';
-import 'package:allumni_connect/features/directory/widgets/directory_search_bar.dart';
-import 'package:allumni_connect/features/directory/widgets/filters_bottom_sheet.dart';
 import 'package:allumni_connect/features/map/providers/map_providers.dart';
 import 'package:allumni_connect/features/map/widgets/alumni_map_card.dart';
 import 'package:allumni_connect/features/map/widgets/alumni_map_marker.dart';
 import 'package:allumni_connect/features/map/widgets/map_filter_chips.dart';
 import 'package:allumni_connect/features/map/widgets/map_floating_controls.dart';
-import 'package:allumni_connect/features/map/widgets/map_top_bar.dart';
 import 'package:allumni_connect/features/map/widgets/selected_alumni_label.dart';
 import 'package:allumni_connect/features/map/widgets/user_location_marker.dart';
 import 'package:allumni_connect/models/alumni.dart';
 import 'package:allumni_connect/routing/routes.dart';
-import 'package:allumni_connect/services/location_service.dart';
 
 /// Écran Carte : position des alumni à proximité + itinéraire, au-dessus
 /// d'un fond OpenStreetMap (voir [MapController]/[FlutterMap]).
@@ -38,7 +32,6 @@ class MapViewScreen extends ConsumerStatefulWidget {
 class _MapViewScreenState extends ConsumerState<MapViewScreen> {
   final MapController _mapController = MapController();
   bool _useLightTiles = false;
-  bool _isLocating = false;
 
   Future<void> _launch(Uri uri) async {
     final bool canLaunch = await canLaunchUrl(uri);
@@ -53,33 +46,24 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  void _showComingSoon(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$feature : bientôt disponible.')),
-    );
-  }
-
-  Future<void> _locateMe() async {
-    setState(() => _isLocating = true);
-    try {
-      final LocationResult result = await LocationService.getCurrentLocation();
-      _mapController.move(LatLng(result.latitude, result.longitude), 15);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Position retrouvée : ${result.city}, ${result.country}')),
-        );
-      }
-    } on LocationServiceException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-      }
-    } on LocationPermissionException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-      }
-    } finally {
-      if (mounted) setState(() => _isLocating = false);
+  /// Recadre la caméra pour que ma position et tous les alumni à proximité
+  /// (dans le rayon sélectionné) restent visibles à l'écran.
+  void _fitToNearby(LatLng center, List<Alumni> nearby) {
+    if (nearby.isEmpty) {
+      _mapController.move(center, 13);
+      return;
     }
+    final LatLngBounds bounds = LatLngBounds.fromPoints([
+      center,
+      for (final Alumni a in nearby) LatLng(a.latitude, a.longitude),
+    ]);
+    _mapController.fitCamera(
+      CameraFit.bounds(
+        bounds: bounds,
+        padding: const EdgeInsets.fromLTRB(48, 48, 88, 48),
+        maxZoom: 16,
+      ),
+    );
   }
 
   void _showRadiusPicker() {
@@ -88,6 +72,15 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => const _RadiusPickerSheet(),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _fitToNearby(ref.read(mapCenterProvider), ref.read(nearbyAlumniProvider));
+    });
   }
 
   @override
@@ -100,38 +93,25 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
   Widget build(BuildContext context) {
     final List<Alumni> nearby = ref.watch(nearbyAlumniProvider);
     final Alumni? selected = ref.watch(selectedAlumniProvider);
-    final FiltersState filters = ref.watch(filtersProvider);
-    final FiltersNotifier filtersNotifier = ref.read(filtersProvider.notifier);
     final double radiusKm = ref.watch(mapRadiusKmProvider);
     final LatLng center = ref.watch(mapCenterProvider);
 
+    ref.listen<List<Alumni>>(nearbyAlumniProvider, (previous, next) {
+      _fitToNearby(ref.read(mapCenterProvider), next);
+    });
+
     return Scaffold(
+      appBar: AppBar(title: const Text('Carte')),
       backgroundColor: AppColors.cream,
       body: SafeArea(
         child: Column(
           children: [
-            MapTopBar(
-              onMessagesTap: () => _showComingSoon('Messagerie'),
-              onProfileTap: () => context.goNamed(RouteName.myProfile),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: DirectorySearchBar(
-                initialValue: filters.query,
-                onChanged: filtersNotifier.setQuery,
-                onFilterTap: () => FiltersBottomSheet.show(context),
-                activeFilterCount: filters.activeCount,
-              ),
-            ),
             const SizedBox(height: AppSpacing.sm),
             MapFilterChipsRow(
               radiusKm: radiusKm,
               onRadiusTap: _showRadiusPicker,
-              promotionLabel: filters.promotion != null ? 'Promo ${filters.promotion}' : 'Toutes promos',
-              onPromotionTap: () => FiltersBottomSheet.show(context),
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.lg),
             Expanded(
               child: Stack(
                 children: [
@@ -196,8 +176,7 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
                     child: MapFloatingControls(
                       onListTap: () => context.goNamed(RouteName.directory),
                       onLayersTap: () => setState(() => _useLightTiles = !_useLightTiles),
-                      onLocateTap: _locateMe,
-                      isLocating: _isLocating,
+                      onLocateTap: () => _fitToNearby(center, nearby),
                       activeCount: nearby.length,
                     ),
                   ),

@@ -8,10 +8,15 @@ import 'package:allumni_connect/models/alumni.dart';
 class MockAlumniRepository {
   MockAlumniRepository._();
 
-  /// Position de référence utilisée pour le filtre de proximité tant que
-  /// LocationService n'est pas branché (correspond à Douala, Akwa).
-  static const double referenceLatitude = 4.0511;
-  static const double referenceLongitude = 9.7679;
+  /// Id de l'alumni connecté (mock) tant que l'authentification n'est pas
+  /// branchée à un vrai profil. Sert de point de référence pour le filtre
+  /// de proximité géographique : on compare ses coordonnées à celles des
+  /// autres alumni, comme le ferait la position GPS réelle une fois
+  /// LocationService branché.
+  static const String currentAlumniId = 'alum_001';
+
+  /// Alumni actuellement connecté (mock), résolu depuis [currentAlumniId].
+  static Alumni get currentAlumni => all.firstWhere((a) => a.id == currentAlumniId);
 
   static final List<Alumni> all = <Alumni>[
     const Alumni(

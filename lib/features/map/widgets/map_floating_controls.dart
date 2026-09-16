@@ -4,7 +4,7 @@ import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 
 /// Colonne d'actions flottantes à droite de la carte : vue liste, style de
-/// carte, recentrage GPS + compteur d'alumni affichés.
+/// carte, recentrage sur ma position + compteur d'alumni affichés.
 class MapFloatingControls extends StatelessWidget {
   const MapFloatingControls({
     super.key,
@@ -12,14 +12,12 @@ class MapFloatingControls extends StatelessWidget {
     required this.onLayersTap,
     required this.onLocateTap,
     required this.activeCount,
-    this.isLocating = false,
   });
 
   final VoidCallback onListTap;
   final VoidCallback onLayersTap;
   final VoidCallback onLocateTap;
   final int activeCount;
-  final bool isLocating;
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +27,7 @@ class MapFloatingControls extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         _RoundButton(icon: Icons.layers_outlined, onTap: onLayersTap),
         const SizedBox(height: AppSpacing.sm),
-        _RoundButton(
-          icon: Icons.my_location_rounded,
-          onTap: onLocateTap,
-          isLoading: isLocating,
-        ),
+        _RoundButton(icon: Icons.my_location_rounded, onTap: onLocateTap),
         const SizedBox(height: AppSpacing.sm),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
@@ -60,11 +54,10 @@ class MapFloatingControls extends StatelessWidget {
 }
 
 class _RoundButton extends StatelessWidget {
-  const _RoundButton({required this.icon, required this.onTap, this.isLoading = false});
+  const _RoundButton({required this.icon, required this.onTap});
 
   final IconData icon;
   final VoidCallback onTap;
-  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -79,12 +72,7 @@ class _RoundButton extends StatelessWidget {
         child: SizedBox(
           width: 44,
           height: 44,
-          child: isLoading
-              ? const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
-                )
-              : Icon(icon, color: AppColors.ink, size: 20),
+          child: Icon(icon, color: AppColors.ink, size: 20),
         ),
       ),
     );

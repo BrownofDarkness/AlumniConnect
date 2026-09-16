@@ -7,9 +7,9 @@ import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/alumni_x.dart';
 import 'package:allumni_connect/features/detail/widgets/contact_shortcut.dart';
 import 'package:allumni_connect/features/detail/widgets/detail_header.dart';
+import 'package:allumni_connect/features/detail/widgets/alumni_location_map.dart';
 import 'package:allumni_connect/features/detail/widgets/detail_section_card.dart';
 import 'package:allumni_connect/features/directory/providers/directory_providers.dart';
-import 'package:allumni_connect/features/onboarding/widgets/map_preview.dart';
 import 'package:allumni_connect/models/alumni.dart';
 
 /// Fiche détaillée d'un alumni : identité, parcours, biographie,
@@ -206,7 +206,10 @@ class AlumniDetailScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const MapPreview(height: 140),
+                        AlumniLocationMap(
+                          latitude: alumni.latitude,
+                          longitude: alumni.longitude,
+                        ),
                         const SizedBox(height: AppSpacing.md),
                         Row(
                           children: [

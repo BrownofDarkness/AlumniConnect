@@ -64,19 +64,20 @@ class AlumniMapMarker extends StatelessWidget {
                       : null,
                 ),
               ),
-              Positioned(
-                bottom: -2,
-                right: -2,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(color: AppColors.white, shape: BoxShape.circle),
-                  child: const CircleAvatar(
-                    radius: 8,
-                    backgroundColor: AppColors.success,
-                    child: Icon(Icons.check_rounded, size: 10, color: Colors.white),
+              if (alumni.profilComplet)
+                Positioned(
+                  bottom: -2,
+                  right: -2,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(color: AppColors.white, shape: BoxShape.circle),
+                    child: const CircleAvatar(
+                      radius: 8,
+                      backgroundColor: AppColors.success,
+                      child: Icon(Icons.check_rounded, size: 10, color: Colors.white),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           Transform.translate(

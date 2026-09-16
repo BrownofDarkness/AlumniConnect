@@ -74,15 +74,16 @@ class AlumniMapCard extends StatelessWidget {
                           )
                         : null,
                   ),
-                  const Positioned(
-                    bottom: -2,
-                    right: -2,
-                    child: CircleAvatar(
-                      radius: 8,
-                      backgroundColor: AppColors.success,
-                      child: Icon(Icons.check_rounded, size: 10, color: Colors.white),
+                  if (alumni.profilComplet)
+                    const Positioned(
+                      bottom: -2,
+                      right: -2,
+                      child: CircleAvatar(
+                        radius: 8,
+                        backgroundColor: AppColors.success,
+                        child: Icon(Icons.check_rounded, size: 10, color: Colors.white),
+                      ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(width: AppSpacing.md),
