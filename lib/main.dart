@@ -22,18 +22,30 @@ Future<void> main() async {
   );
 }
 
-class AllumniConnectApp extends StatelessWidget {
+class AllumniConnectApp extends StatefulWidget {
   const AllumniConnectApp({super.key});
 
   @override
+  State<AllumniConnectApp> createState() => _AllumniConnectAppState();
+}
+
+class _AllumniConnectAppState extends State<AllumniConnectApp> {
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'AlumniConnect',
-      debugShowCheckedModeBanner: false,
-      routerConfig: appRouter,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+    return GestureDetector(
+      onTap: hideKeyboard,
+      child: MaterialApp.router(
+        title: 'AlumniConnect',
+        debugShowCheckedModeBanner: false,
+        routerConfig: appRouter,
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: ThemeMode.system,
+      ),
     );
+  }
+
+  void hideKeyboard() {
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 }

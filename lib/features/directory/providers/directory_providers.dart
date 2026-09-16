@@ -14,16 +14,16 @@ final Provider<List<Alumni>> alumniListProvider = Provider<List<Alumni>>((ref) {
 });
 
 /// Position de référence de l'alumni connecté, utilisée par le filtre de
-/// proximité géographique. En mock : position fixe (Douala).
+/// proximité géographique — résolue depuis les coordonnées de
+/// [MockAlumniRepository.currentAlumni] tant que l'authentification n'est
+/// pas branchée à un vrai profil.
 ///
 /// TODO : remplacer par la position réelle du profil (LocationService /
 /// document Firestore de l'utilisateur connecté).
 final Provider<({double lat, double lng})> referencePositionProvider =
     Provider<({double lat, double lng})>((ref) {
-  return (
-    lat: MockAlumniRepository.referenceLatitude,
-    lng: MockAlumniRepository.referenceLongitude,
-  );
+  final Alumni me = MockAlumniRepository.currentAlumni;
+  return (lat: me.latitude, lng: me.longitude);
 });
 
 /// Notifier gérant l'état du panneau de filtres.
@@ -82,7 +82,9 @@ final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((re
   final FiltersState filters = ref.watch(filtersProvider);
   final ({double lat, double lng}) refPos = ref.watch(referencePositionProvider);
 
-  Iterable<Alumni> result = all.where((a) => a.profilComplet);
+  Iterable<Alumni> result = all.where(
+    (a) => a.profilComplet && a.id != MockAlumniRepository.currentAlumniId,
+  );
 
   if (filters.query.trim().isNotEmpty) {
     final String q = filters.query.trim().toLowerCase();

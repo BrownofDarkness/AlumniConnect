@@ -3,16 +3,30 @@ import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 
+/// Titre de section (label uppercase en bleu) affiché au-dessus d'une
+/// [DetailSectionCard], en dehors de son cadre blanc.
+class DetailSectionTitle extends StatelessWidget {
+  const DetailSectionTitle({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title.toUpperCase(),
+      style: AppTextStyles.labelCaps.copyWith(color: AppColors.primary),
+    );
+  }
+}
+
 /// Carte de section blanche réutilisée dans la fiche alumni
 /// (Parcours, Biographie, Coordonnées, Localisation).
 class DetailSectionCard extends StatelessWidget {
   const DetailSectionCard({
     super.key,
-    required this.title,
     required this.child,
   });
 
-  final String title;
   final Widget child;
 
   @override
@@ -25,17 +39,7 @@ class DetailSectionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(color: AppColors.divider),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title.toUpperCase(),
-            style: AppTextStyles.labelCaps.copyWith(color: AppColors.muted),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          child,
-        ],
-      ),
+      child: child,
     );
   }
 }
@@ -57,7 +61,7 @@ class DetailInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

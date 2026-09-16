@@ -13,6 +13,8 @@ import 'package:allumni_connect/features/settings/screens/change_password_screen
 import 'package:allumni_connect/features/admin/screens/add_alumni_screen.dart';
 import 'package:allumni_connect/features/admin/screens/invitation_sent_screen.dart';
 
+import '../core/widgets/main_scaffold.dart';
+
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
@@ -37,43 +39,9 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
-      path: '/${RouteName.directory}',
-      name: RouteName.directory,
-      builder: (context, state) => const DirectoryScreen(),
-    ),
-    GoRoute(
       path: '/${RouteName.alumniDetail}/:id',
       name: RouteName.alumniDetail,
       builder: (context, state) => AlumniDetailScreen(id: state.pathParameters['id']!),
-    ),
-    GoRoute(
-      path: '/${RouteName.map}',
-      name: RouteName.map,
-      builder: (context, state) => const MapViewScreen(),
-    ),
-    GoRoute(
-      path: '/${RouteName.myProfile}',
-      name: RouteName.myProfile,
-      builder: (context, state) => const MyProfileScreen(),
-      routes: [
-        GoRoute(
-          path: RouteName.editProfile,
-          name: RouteName.editProfile,
-          builder: (context, state) => const EditProfileScreen(),
-        ),
-      ],
-    ),
-    GoRoute(
-      path: '/${RouteName.settings}',
-      name: RouteName.settings,
-      builder: (context, state) => const SettingsScreen(),
-      routes: [
-        GoRoute(
-          path: RouteName.changePassword,
-          name: RouteName.changePassword,
-          builder: (context, state) => const ChangePasswordScreen(),
-        ),
-      ],
     ),
     GoRoute(
       path: '/${RouteName.addAlumni}',
@@ -84,6 +52,65 @@ final GoRouter appRouter = GoRouter(
       path: '/${RouteName.invitationSent}',
       name: RouteName.invitationSent,
       builder: (context, state) => const InvitationSentScreen(),
+    ),
+
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => MainScaffold(
+        navigationShell: navigationShell,
+      ),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/${RouteName.directory}',
+              name: RouteName.directory,
+              builder: (context, state) => const DirectoryScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/${RouteName.map}',
+              name: RouteName.map,
+              builder: (context, state) => const MapViewScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/${RouteName.myProfile}',
+              name: RouteName.myProfile,
+              builder: (context, state) => const MyProfileScreen(),
+              routes: [
+                GoRoute(
+                  path: RouteName.editProfile,
+                  name: RouteName.editProfile,
+                  builder: (context, state) => const EditProfileScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
+        // Branch 3 — Profile.
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/${RouteName.settings}',
+              name: RouteName.settings,
+              builder: (context, state) => const SettingsScreen(),
+              routes: [
+                GoRoute(
+                  path: RouteName.changePassword,
+                  name: RouteName.changePassword,
+                  builder: (context, state) => const ChangePasswordScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );
