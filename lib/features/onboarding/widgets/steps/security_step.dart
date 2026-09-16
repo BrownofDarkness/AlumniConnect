@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
+import 'package:allumni_connect/core/utils/validators.dart';
 import 'package:allumni_connect/core/widgets/app_button.dart';
 import 'package:allumni_connect/core/widgets/app_text_field.dart';
+import 'package:allumni_connect/features/onboarding/models/onboarding_data.dart';
 import 'package:allumni_connect/features/onboarding/widgets/onboarding_step_shell.dart';
 import 'package:allumni_connect/features/onboarding/widgets/password_strength_indicator.dart';
 
 class SecurityStep extends StatefulWidget {
-  final VoidCallback onContinue;
+  final void Function(SecurityData) onContinue;
   final VoidCallback onSkip;
   final VoidCallback onBack;
 
@@ -24,6 +26,7 @@ class SecurityStep extends StatefulWidget {
 }
 
 class _SecurityStepState extends State<SecurityStep> with AutomaticKeepAliveClientMixin {
+  final _formKey = GlobalKey<FormState>();
   final _newPassword = TextEditingController();
   final _confirmPassword = TextEditingController();
   PasswordStrength _strength = PasswordStrength.none;
@@ -51,6 +54,19 @@ class _SecurityStepState extends State<SecurityStep> with AutomaticKeepAliveClie
     });
   }
 
+  void _handleContinue() {
+    FocusScope.of(context).unfocus();
+    if (_formKey.currentState?.validate() ?? false) {
+      widget.onContinue(SecurityData(newPassword: _newPassword.text));
+    }
+  }
+
+  String? _validateConfirm(String? value) {
+    if (value == null || value.isEmpty) return 'Confirmation requise';
+    if (value != _newPassword.text) return 'Les mots de passe ne correspondent pas';
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -64,7 +80,7 @@ class _SecurityStepState extends State<SecurityStep> with AutomaticKeepAliveClie
         children: [
           AppButton.primary(
             label: 'Enregistrer',
-            onPressed: widget.onContinue,
+            onPressed: _handleContinue,
           ),
           const SizedBox(height: 10),
           TextButton(
@@ -83,74 +99,79 @@ class _SecurityStepState extends State<SecurityStep> with AutomaticKeepAliveClie
           ),
         ],
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(28, 4, 28, 20),
-        child: Column(
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: scheme.primary.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                LucideIcons.shieldCheck,
-                size: 28,
-                color: scheme.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Sécurise ton compte',
-              style: AppTextStyles.title.copyWith(
-                color: scheme.onSurface,
-                fontSize: 24,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Ton mot de passe actuel a été généré automatiquement. Tu peux le remplacer par un mot de passe personnel.',
-              style: AppTextStyles.body.copyWith(color: AppColors.muted),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 28),
-            AppTextField(
-              label: 'Nouveau mot de passe',
-              controller: _newPassword,
-              hint: '••••••••',
-              isPassword: true,
-              textInputAction: TextInputAction.next,
-            ),
-            PasswordStrengthIndicator(strength: _strength),
-            const SizedBox(height: 14),
-            AppTextField(
-              label: 'Confirmer le mot de passe',
-              controller: _confirmPassword,
-              hint: '••••••••',
-              isPassword: true,
-              textInputAction: TextInputAction.done,
-            ),
-            const SizedBox(height: 14),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  LucideIcons.info,
-                  size: 14,
-                  color: AppColors.muted,
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(28, 4, 28, 20),
+          child: Column(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: scheme.primary.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Au moins 8 caractères, dont une majuscule et un chiffre.',
-                    style: AppTextStyles.caption.copyWith(color: AppColors.muted),
+                child: Icon(
+                  LucideIcons.shieldCheck,
+                  size: 28,
+                  color: scheme.primary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Sécurise ton compte',
+                style: AppTextStyles.title.copyWith(
+                  color: scheme.onSurface,
+                  fontSize: 24,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Ton mot de passe actuel a été généré automatiquement. Tu peux le remplacer par un mot de passe personnel.',
+                style: AppTextStyles.body.copyWith(color: AppColors.muted),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              AppTextField(
+                label: 'Nouveau mot de passe',
+                controller: _newPassword,
+                hint: '••••••••',
+                isPassword: true,
+                textInputAction: TextInputAction.next,
+                validator: Validators.strongPassword,
+              ),
+              PasswordStrengthIndicator(strength: _strength),
+              const SizedBox(height: 14),
+              AppTextField(
+                label: 'Confirmer le mot de passe',
+                controller: _confirmPassword,
+                hint: '••••••••',
+                isPassword: true,
+                textInputAction: TextInputAction.done,
+                validator: _validateConfirm,
+              ),
+              const SizedBox(height: 14),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    LucideIcons.info,
+                    size: 14,
+                    color: AppColors.muted,
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Au moins 8 caractères, dont une majuscule et un chiffre.',
+                      style: AppTextStyles.caption.copyWith(color: AppColors.muted),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

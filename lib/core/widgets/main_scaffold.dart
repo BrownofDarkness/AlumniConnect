@@ -1,4 +1,3 @@
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

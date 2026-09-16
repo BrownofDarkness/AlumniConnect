@@ -5,10 +5,11 @@ import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/validators.dart';
 import 'package:allumni_connect/core/widgets/app_button.dart';
 import 'package:allumni_connect/core/widgets/app_text_field.dart';
+import 'package:allumni_connect/features/onboarding/models/onboarding_data.dart';
 import 'package:allumni_connect/features/onboarding/widgets/onboarding_step_shell.dart';
 
 class IdentityStep extends StatefulWidget {
-  final VoidCallback onContinue;
+  final void Function(IdentityData) onContinue;
   final VoidCallback onBack;
 
   const IdentityStep({
@@ -49,7 +50,15 @@ class _IdentityStepState extends State<IdentityStep> with AutomaticKeepAliveClie
   void _handleContinue() {
     FocusScope.of(context).unfocus();
     if (_formKey.currentState?.validate() ?? false) {
-      widget.onContinue();
+      widget.onContinue(IdentityData(
+        prenom: _prenom.text.trim(),
+        nom: _nom.text.trim(),
+        promotion: _promotion.text.trim(),
+        filiere: _filiere.text.trim(),
+        posteActuel: _poste.text.trim(),
+        entreprise: _entreprise.text.trim(),
+        bio: _bio.text.trim(),
+      ));
     }
   }
 

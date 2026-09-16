@@ -22,22 +22,23 @@ Future<void> main() async {
   );
 }
 
-class AllumniConnectApp extends StatefulWidget {
+class AllumniConnectApp extends ConsumerStatefulWidget {
   const AllumniConnectApp({super.key});
 
   @override
-  State<AllumniConnectApp> createState() => _AllumniConnectAppState();
+  ConsumerState<AllumniConnectApp> createState() => _AllumniConnectAppState();
 }
 
-class _AllumniConnectAppState extends State<AllumniConnectApp> {
+class _AllumniConnectAppState extends ConsumerState<AllumniConnectApp> {
   @override
   Widget build(BuildContext context) {
+    final router = ref.watch(routerProvider);
     return GestureDetector(
       onTap: hideKeyboard,
       child: MaterialApp.router(
         title: 'AlumniConnect',
         debugShowCheckedModeBanner: false,
-        routerConfig: appRouter,
+        routerConfig: router,
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
         themeMode: ThemeMode.system,

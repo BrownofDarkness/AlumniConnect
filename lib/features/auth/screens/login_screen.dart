@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
+import 'package:allumni_connect/core/utils/custom_exceptions.dart';
 import 'package:allumni_connect/core/utils/validators.dart';
 import 'package:allumni_connect/core/widgets/app_button.dart';
+import 'package:allumni_connect/core/widgets/app_snackbar.dart';
 import 'package:allumni_connect/core/widgets/app_text_field.dart';
+import 'package:allumni_connect/features/auth/providers/auth_providers.dart';
 import 'package:allumni_connect/routing/routes.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -35,10 +39,25 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) return;
+
     setState(() => _submitState = ButtonState.loading);
-    await Future.delayed(const Duration(milliseconds: 1500));
-    if (!mounted) return;
-    context.goNamed(RouteName.onboarding);
+
+    try {
+      await ref.read(authServiceProvider).signInWithEmail(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+      // Sur succès, le router redirect s'occupe de la navigation
+      // (onboarding si profilComplet=false, directory sinon).
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      setState(() => _submitState = ButtonState.enabled);
+      AppSnackBar.error(context, e.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _submitState = ButtonState.enabled);
+      AppSnackBar.error(context, 'Une erreur est survenue. Réessaie dans un instant.');
+    }
   }
 
   @override
