@@ -77,10 +77,14 @@ final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((re
 
   if (filters.query.trim().isNotEmpty) {
     final String q = filters.query.trim().toLowerCase();
-    result = result.where((a) =>
-        '${a.prenom} ${a.nom}'.toLowerCase().contains(q) ||
-        a.entreprise.toLowerCase().contains(q) ||
-        a.ville.toLowerCase().contains(q));
+    result = result.where(
+      (a) =>
+          '${a.prenom} ${a.nom}'.toLowerCase().contains(q) ||
+          a.entreprise.toLowerCase().contains(q) ||
+          a.ville.toLowerCase().contains(q) ||
+          a.promotion.toLowerCase().contains(q) ||
+          a.filiere.toLowerCase().contains(q),
+    );
   }
 
   if (filters.country != null) {
@@ -147,25 +151,25 @@ final distanceKmProvider =
 
 final Provider<Map<String, int>> cityCountsProvider =
     Provider<Map<String, int>>((ref) {
-  final List<Alumni> all = ref.watch(alumniListProvider);
-  final Map<String, int> counts = <String, int>{};
-  for (final Alumni a in all) {
-    counts[a.ville] = (counts[a.ville] ?? 0) + 1;
-  }
-  return counts;
-});
+      final List<Alumni> all = ref.watch(alumniListProvider);
+      final Map<String, int> counts = <String, int>{};
+      for (final Alumni a in all) {
+        counts[a.ville] = (counts[a.ville] ?? 0) + 1;
+      }
+      return counts;
+    });
 
 final Provider<List<String>> availableCountriesProvider =
     Provider<List<String>>((ref) {
-  final List<Alumni> all = ref.watch(alumniListProvider);
-  final Map<String, int> counts = <String, int>{};
-  for (final Alumni a in all) {
-    counts[a.pays] = (counts[a.pays] ?? 0) + 1;
-  }
-  final List<String> countries = counts.keys.toList()
-    ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
-  return countries;
-});
+      final List<Alumni> all = ref.watch(alumniListProvider);
+      final Map<String, int> counts = <String, int>{};
+      for (final Alumni a in all) {
+        counts[a.pays] = (counts[a.pays] ?? 0) + 1;
+      }
+      final List<String> countries = counts.keys.toList()
+        ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
+      return countries;
+    });
 
 final availableCitiesProvider =
     Provider.family<List<String>, String?>((ref, country) {
