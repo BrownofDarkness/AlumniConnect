@@ -93,10 +93,14 @@ final NotifierProvider<FiltersNotifier, FiltersState> filtersProvider =
 /// Le tri par proximité (du plus proche au plus éloigné) ne s'applique
 /// que lorsque le filtre de proximité est actif, conformément au parcours
 /// utilisateur défini dans la documentation produit.
-final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((ref) {
+final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((
+  ref,
+) {
   final List<Alumni> all = ref.watch(alumniListProvider);
   final FiltersState filters = ref.watch(filtersProvider);
-  final ({double lat, double lng}) refPos = ref.watch(referencePositionProvider);
+  final ({double lat, double lng}) refPos = ref.watch(
+    referencePositionProvider,
+  );
 
   Iterable<Alumni> result = all.where(
     (a) => a.profilComplet && a.id != MockAlumniRepository.currentAlumniId,
@@ -104,10 +108,14 @@ final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((re
 
   if (filters.query.trim().isNotEmpty) {
     final String q = filters.query.trim().toLowerCase();
-    result = result.where((a) =>
-        '${a.prenom} ${a.nom}'.toLowerCase().contains(q) ||
-        a.entreprise.toLowerCase().contains(q) ||
-        a.ville.toLowerCase().contains(q));
+    result = result.where(
+      (a) =>
+          '${a.prenom} ${a.nom}'.toLowerCase().contains(q) ||
+          a.entreprise.toLowerCase().contains(q) ||
+          a.ville.toLowerCase().contains(q) ||
+          a.promotion.toLowerCase().contains(q) ||
+          a.filiere.toLowerCase().contains(q),
+    );
   }
 
   if (filters.country != null) {
@@ -129,30 +137,30 @@ final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((re
   List<Alumni> list = result.toList();
 
   if (filters.proximityEnabled) {
-    list = list.where((a) {
-      final double d = GeoUtils.distanceKm(
-        lat1: refPos.lat,
-        lon1: refPos.lng,
-        lat2: a.latitude,
-        lon2: a.longitude,
-      );
-      return d <= filters.radiusKm;
-    }).toList()
-      ..sort((a, b) {
-        final double da = GeoUtils.distanceKm(
-          lat1: refPos.lat,
-          lon1: refPos.lng,
-          lat2: a.latitude,
-          lon2: a.longitude,
-        );
-        final double db = GeoUtils.distanceKm(
-          lat1: refPos.lat,
-          lon1: refPos.lng,
-          lat2: b.latitude,
-          lon2: b.longitude,
-        );
-        return da.compareTo(db);
-      });
+    list =
+        list.where((a) {
+          final double d = GeoUtils.distanceKm(
+            lat1: refPos.lat,
+            lon1: refPos.lng,
+            lat2: a.latitude,
+            lon2: a.longitude,
+          );
+          return d <= filters.radiusKm;
+        }).toList()..sort((a, b) {
+          final double da = GeoUtils.distanceKm(
+            lat1: refPos.lat,
+            lon1: refPos.lng,
+            lat2: a.latitude,
+            lon2: a.longitude,
+          );
+          final double db = GeoUtils.distanceKm(
+            lat1: refPos.lat,
+            lon1: refPos.lng,
+            lat2: b.latitude,
+            lon2: b.longitude,
+          );
+          return da.compareTo(db);
+        });
   } else {
     list.sort((a, b) => a.nom.compareTo(b.nom));
   }
@@ -162,9 +170,10 @@ final Provider<List<Alumni>> filteredAlumniProvider = Provider<List<Alumni>>((re
 
 /// Distance (km) entre un alumni et la position de référence — utilisé pour
 /// afficher "À 2.4 km" sur la fiche détaillée / la carte.
-final distanceKmProvider =
-    Provider.family<double, Alumni>((ref, alumni) {
-  final ({double lat, double lng}) refPos = ref.watch(referencePositionProvider);
+final distanceKmProvider = Provider.family<double, Alumni>((ref, alumni) {
+  final ({double lat, double lng}) refPos = ref.watch(
+    referencePositionProvider,
+  );
   return GeoUtils.distanceKm(
     lat1: refPos.lat,
     lon1: refPos.lng,
@@ -177,32 +186,34 @@ final distanceKmProvider =
 /// actifs) — utilisé pour les compteurs à côté de chaque chip ville.
 final Provider<Map<String, int>> cityCountsProvider =
     Provider<Map<String, int>>((ref) {
-  final List<Alumni> all = ref.watch(alumniListProvider);
-  final Map<String, int> counts = <String, int>{};
-  for (final Alumni a in all) {
-    counts[a.ville] = (counts[a.ville] ?? 0) + 1;
-  }
-  return counts;
-});
+      final List<Alumni> all = ref.watch(alumniListProvider);
+      final Map<String, int> counts = <String, int>{};
+      for (final Alumni a in all) {
+        counts[a.ville] = (counts[a.ville] ?? 0) + 1;
+      }
+      return counts;
+    });
 
 /// Liste des pays représentés dans la communauté, triée par nombre
 /// d'alumni décroissant.
 final Provider<List<String>> availableCountriesProvider =
     Provider<List<String>>((ref) {
-  final List<Alumni> all = ref.watch(alumniListProvider);
-  final Map<String, int> counts = <String, int>{};
-  for (final Alumni a in all) {
-    counts[a.pays] = (counts[a.pays] ?? 0) + 1;
-  }
-  final List<String> countries = counts.keys.toList()
-    ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
-  return countries;
-});
+      final List<Alumni> all = ref.watch(alumniListProvider);
+      final Map<String, int> counts = <String, int>{};
+      for (final Alumni a in all) {
+        counts[a.pays] = (counts[a.pays] ?? 0) + 1;
+      }
+      final List<String> countries = counts.keys.toList()
+        ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
+      return countries;
+    });
 
 /// Villes disponibles pour un pays donné (ou toutes si `country` est null),
 /// triées par nombre d'alumni décroissant.
-final availableCitiesProvider =
-    Provider.family<List<String>, String?>((ref, country) {
+final availableCitiesProvider = Provider.family<List<String>, String?>((
+  ref,
+  country,
+) {
   final List<Alumni> all = ref.watch(alumniListProvider);
   final Map<String, int> counts = <String, int>{};
   for (final Alumni a in all) {
@@ -216,8 +227,7 @@ final availableCitiesProvider =
 
 /// Récupère un alumni par id dans le dataset courant (mock ou Firestore
 /// plus tard) — utilisé par la fiche détaillée.
-final alumniByIdProvider =
-    Provider.family<Alumni?, String>((ref, id) {
+final alumniByIdProvider = Provider.family<Alumni?, String>((ref, id) {
   final List<Alumni> all = ref.watch(alumniListProvider);
   for (final Alumni a in all) {
     if (a.id == id) return a;
