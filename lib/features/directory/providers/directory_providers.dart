@@ -13,16 +13,22 @@ final Provider<List<Alumni>> alumniListProvider = Provider<List<Alumni>>((ref) {
   return MockAlumniRepository.all;
 });
 
+/// Alumni actuellement connecté (mock), résolu dans [alumniListProvider]
+/// depuis [MockAlumniRepository.currentAlumniId] tant que l'authentification
+/// n'est pas branchée à un vrai profil.
+final Provider<Alumni> currentAlumniProvider = Provider<Alumni>((ref) {
+  final List<Alumni> all = ref.watch(alumniListProvider);
+  return all.firstWhere((a) => a.id == MockAlumniRepository.currentAlumniId);
+});
+
 /// Position de référence de l'alumni connecté, utilisée par le filtre de
-/// proximité géographique — résolue depuis les coordonnées de
-/// [MockAlumniRepository.currentAlumni] tant que l'authentification n'est
-/// pas branchée à un vrai profil.
+/// proximité géographique.
 ///
 /// TODO : remplacer par la position réelle du profil (LocationService /
 /// document Firestore de l'utilisateur connecté).
 final Provider<({double lat, double lng})> referencePositionProvider =
     Provider<({double lat, double lng})>((ref) {
-  final Alumni me = MockAlumniRepository.currentAlumni;
+  final Alumni me = ref.watch(currentAlumniProvider);
   return (lat: me.latitude, lng: me.longitude);
 });
 
