@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:allumni_connect/firebase_options.dart';
 import 'package:allumni_connect/routing/app_router.dart';
+import 'package:allumni_connect/core/providers/theme_mode_provider.dart';
 import 'package:allumni_connect/core/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -33,6 +34,7 @@ class _AllumniConnectAppState extends ConsumerState<AllumniConnectApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
+    final ThemeMode themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
     return GestureDetector(
       onTap: hideKeyboard,
       child: MaterialApp.router(
@@ -41,7 +43,7 @@ class _AllumniConnectAppState extends ConsumerState<AllumniConnectApp> {
         routerConfig: router,
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
-        themeMode: ThemeMode.system,
+        themeMode: themeMode,
       ),
     );
   }

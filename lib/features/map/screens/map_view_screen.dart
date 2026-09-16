@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/geo_utils.dart';
@@ -90,6 +89,7 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AsyncValue<List<Alumni>> streamState = ref.watch(alumniStreamProvider);
     final List<Alumni> nearby = ref.watch(nearbyAlumniProvider);
     final Alumni? selected = ref.watch(selectedAlumniProvider);
     final double radiusKm = ref.watch(mapRadiusKmProvider);
@@ -101,7 +101,6 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Carte')),
-      backgroundColor: AppColors.cream,
       body: SafeArea(
         child: Column(
           children: [
@@ -201,6 +200,23 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
                         ),
                       ),
                     ),
+                  if (streamState.hasValue &&
+                      nearby.isEmpty &&
+                      selected == null)
+                    const Positioned(
+                      left: AppSpacing.lg,
+                      right: AppSpacing.lg,
+                      bottom: AppSpacing.lg,
+                      child: _MapEmptyBanner(),
+                    ),
+                  if (streamState.isLoading)
+                    const Positioned.fill(child: _MapLoadingOverlay()),
+                  if (streamState.hasError)
+                    Positioned.fill(
+                      child: _MapErrorOverlay(
+                        onRetry: () => ref.invalidate(alumniStreamProvider),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -211,19 +227,106 @@ class _MapViewScreenState extends ConsumerState<MapViewScreen> {
   }
 }
 
+class _MapLoadingOverlay extends StatelessWidget {
+  const _MapLoadingOverlay();
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return Container(
+      color: scheme.surface.withValues(alpha: 0.85),
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(),
+    );
+  }
+}
+
+class _MapErrorOverlay extends StatelessWidget {
+  const _MapErrorOverlay({required this.onRetry});
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return Container(
+      color: scheme.surface.withValues(alpha: 0.9),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded, color: scheme.error, size: 40),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'Impossible de charger la carte',
+            style: AppTextStyles.title.copyWith(color: scheme.onSurface),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'Vérifie ta connexion internet.',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.body.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          OutlinedButton(onPressed: onRetry, child: const Text('Réessayer')),
+        ],
+      ),
+    );
+  }
+}
+
+class _MapEmptyBanner extends StatelessWidget {
+  const _MapEmptyBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md, vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: scheme.outline),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, size: 18, color: scheme.primary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              'Aucun alumni dans le rayon sélectionné.',
+              style: AppTextStyles.bodySm.copyWith(color: scheme.onSurface),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _RadiusPickerSheet extends ConsumerWidget {
   const _RadiusPickerSheet();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     final double radiusKm = ref.watch(mapRadiusKmProvider);
     final MapRadiusNotifier notifier = ref.read(mapRadiusKmProvider.notifier);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl),
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
       ),
       child: SafeArea(
         top: false,
@@ -236,17 +339,17 @@ class _RadiusPickerSheet extends ConsumerWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.divider,
+                  color: scheme.outline,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            Text('Rayon de recherche', style: AppTextStyles.title.copyWith(color: AppColors.navy)),
+            Text('Rayon de recherche', style: AppTextStyles.title.copyWith(color: scheme.onSurface)),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Affiche les alumni situés à moins de ${radiusKm.round()} km de votre position.',
-              style: AppTextStyles.bodySm.copyWith(color: AppColors.muted),
+              style: AppTextStyles.bodySm.copyWith(color: scheme.onSurfaceVariant),
             ),
             Slider(
               value: radiusKm,

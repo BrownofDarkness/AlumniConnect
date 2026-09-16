@@ -56,3 +56,13 @@ class UnknownAuthException extends AuthException {
   UnknownAuthException()
       : super('Une erreur est survenue. Réessaie dans un instant.');
 }
+
+class WeakPasswordException extends AuthException {
+  WeakPasswordException()
+      : super('Le mot de passe est trop faible (6 caractères minimum).');
+}
+
+class RequiresRecentLoginException extends AuthException {
+  RequiresRecentLoginException()
+      : super('Reconnecte-toi pour effectuer cette action sensible.');
+}

@@ -52,6 +52,23 @@ class AuthService {
     }
   }
 
+  Future<void> reauthenticateWithPassword(String currentPassword) async {
+    final user = _auth.currentUser;
+    final email = user?.email;
+    if (user == null || email == null) throw UnknownAuthException();
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      throw _mapAuthException(e);
+    } catch (_) {
+      throw UnknownAuthException();
+    }
+  }
+
   Future<void> signOut() => _auth.signOut();
 
   AuthException _mapAuthException(FirebaseAuthException e) {
@@ -72,6 +89,10 @@ class AuthService {
         return OperationNotAllowedException();
       case 'network-request-failed':
         return NetworkException();
+      case 'weak-password':
+        return WeakPasswordException();
+      case 'requires-recent-login':
+        return RequiresRecentLoginException();
       default:
         return UnknownAuthException();
     }

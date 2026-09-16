@@ -15,15 +15,6 @@ class DetailSectionTitle extends StatelessWidget {
       title.toUpperCase(),
       style: AppTextStyles.labelCaps.copyWith(color: scheme.onSurfaceVariant),
     );
-
-    if (trailing == null) return label;
-
-    return Row(
-      children: [
-        Expanded(child: label),
-        trailing!,
-      ],
-    );
   }
 }
 
