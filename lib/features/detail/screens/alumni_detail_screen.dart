@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/alumni_x.dart';
@@ -50,6 +49,7 @@ class AlumniDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     final Alumni? alumni = ref.watch(alumniByIdProvider(id));
 
     if (alumni == null) {
@@ -58,7 +58,7 @@ class AlumniDetailScreen extends ConsumerWidget {
         body: Center(
           child: Text(
             'Cet alumni est introuvable.',
-            style: AppTextStyles.body.copyWith(color: AppColors.muted),
+            style: AppTextStyles.body.copyWith(color: scheme.onSurfaceVariant),
           ),
         ),
       );
@@ -67,13 +67,8 @@ class AlumniDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fiche Alumni'),
-        backgroundColor: AppColors.navy,
-        foregroundColor: AppColors.white,
-        iconTheme: const IconThemeData(color: AppColors.white),
         centerTitle: false,
-        titleTextStyle: AppTextStyles.heading.copyWith(color: AppColors.white),
       ),
-      backgroundColor: AppColors.cream,
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -84,9 +79,9 @@ class AlumniDetailScreen extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
               decoration: BoxDecoration(
-                color: AppColors.white,
+                color: scheme.surface,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                border: Border.all(color: AppColors.divider),
+                border: Border.all(color: scheme.outline),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.04),
@@ -170,7 +165,7 @@ class AlumniDetailScreen extends ConsumerWidget {
                   DetailSectionCard(
                     child: Text(
                       alumni.bio,
-                      style: AppTextStyles.body.copyWith(color: AppColors.ink),
+                      style: AppTextStyles.body.copyWith(color: scheme.onSurface),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
@@ -213,12 +208,12 @@ class AlumniDetailScreen extends ConsumerWidget {
                         const SizedBox(height: AppSpacing.md),
                         Row(
                           children: [
-                            const Icon(Icons.place_outlined, size: 16, color: AppColors.muted),
+                            Icon(Icons.place_outlined, size: 16, color: scheme.onSurfaceVariant),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 alumni.localisationCourte,
-                                style: AppTextStyles.bodySm.copyWith(color: AppColors.muted),
+                                style: AppTextStyles.bodySm.copyWith(color: scheme.onSurfaceVariant),
                               ),
                             ),
                             const SizedBox(width: AppSpacing.sm),

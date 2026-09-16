@@ -1,4 +1,3 @@
-import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -18,17 +17,6 @@ class MainScaffold extends StatelessWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
-        selectedLabelStyle: AppTextStyles.caption.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: AppTextStyles.caption.copyWith(
-          fontWeight: FontWeight.w400,
-        ),
-        elevation: 8,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Symbols.group, fill: 0),

@@ -8,6 +8,7 @@ class AppTheme {
 
   static const Color _darkSurface = Color(0xFF142E52);
   static const Color _darkSurfaceHigh = Color(0xFF1E3B60);
+  static const Color _darkBottomNav = Color(0xFF0F2A48);
   static const Color _darkMuted = Color(0xFF8FA0B8);
   static const Color _darkError = Color(0xFFFF7A7A);
 
@@ -47,6 +48,11 @@ class AppTheme {
         space: 1,
       ),
       cardTheme: _cardTheme(Colors.white, AppColors.divider),
+      bottomNavigationBarTheme: _bottomNavTheme(
+        background: Colors.white,
+        selected: AppColors.primary,
+        unselected: AppColors.muted,
+      ),
     );
   }
 
@@ -87,6 +93,11 @@ class AppTheme {
         space: 1,
       ),
       cardTheme: _cardTheme(_darkSurface, const Color(0x14FFFFFF)),
+      bottomNavigationBarTheme: _bottomNavTheme(
+        background: _darkBottomNav,
+        selected: AppColors.amber,
+        unselected: const Color(0xFF6D7E96),
+      ),
     );
   }
 
@@ -183,6 +194,22 @@ class AppTheme {
         foregroundColor: color,
         textStyle: AppTextStyles.heading,
       ),
+    );
+  }
+
+  static BottomNavigationBarThemeData _bottomNavTheme({
+    required Color background,
+    required Color selected,
+    required Color unselected,
+  }) {
+    return BottomNavigationBarThemeData(
+      backgroundColor: background,
+      selectedItemColor: selected,
+      unselectedItemColor: unselected,
+      type: BottomNavigationBarType.fixed,
+      elevation: 8,
+      selectedLabelStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+      unselectedLabelStyle: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w400),
     );
   }
 

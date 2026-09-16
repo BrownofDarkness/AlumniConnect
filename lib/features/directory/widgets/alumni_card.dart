@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/alumni_x.dart';
@@ -36,7 +35,7 @@ class AlumniCard extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: scheme.outline),
           ),
           child: Row(
             children: [
@@ -55,7 +54,9 @@ class AlumniCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       alumni.posteActuel,
-                      style: AppTextStyles.bodySm.copyWith(color: AppColors.muted),
+                      style: AppTextStyles.bodySm.copyWith(
+                        color: scheme.onSurface.withValues(alpha: 0.75),
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -64,14 +65,14 @@ class AlumniCard extends StatelessWidget {
                       children: [
                         _Pill(text: alumni.promotionLabel),
                         const SizedBox(width: AppSpacing.xs),
-                        Icon(Icons.place_outlined, size: 14, color: AppColors.muted),
+                        Icon(Icons.place_outlined, size: 14, color: scheme.onSurfaceVariant),
                         const SizedBox(width: 2),
                         Expanded(
                           child: Text(
                             distanceLabel != null
                                 ? '${alumni.ville} · à $distanceLabel'
                                 : alumni.ville,
-                            style: AppTextStyles.caption.copyWith(color: AppColors.muted),
+                            style: AppTextStyles.caption.copyWith(color: scheme.onSurfaceVariant),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -81,7 +82,7 @@ class AlumniCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: AppColors.muted),
+              Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
             ],
           ),
         ),
@@ -97,14 +98,15 @@ class _Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return CircleAvatar(
       radius: 26,
-      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+      backgroundColor: scheme.primary.withValues(alpha: 0.15),
       backgroundImage: alumni.photoUrl != null ? NetworkImage(alumni.photoUrl!) : null,
       child: alumni.photoUrl == null
           ? Text(
               alumni.initiales,
-              style: AppTextStyles.heading.copyWith(color: AppColors.primary),
+              style: AppTextStyles.heading.copyWith(color: scheme.primary),
             )
           : null,
     );
@@ -118,15 +120,16 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
+        color: scheme.primary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       ),
       child: Text(
         text,
-        style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+        style: AppTextStyles.caption.copyWith(color: scheme.primary, fontWeight: FontWeight.w600),
       ),
     );
   }

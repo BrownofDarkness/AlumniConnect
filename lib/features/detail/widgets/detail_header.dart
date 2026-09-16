@@ -16,14 +16,25 @@ class DetailHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final List<Color> gradient = isDark
+        ? const [Color(0xFF1E3670), AppColors.navy]
+        : const [AppColors.primary, AppColors.navy];
+    final Color pillBg = isDark ? Colors.white.withValues(alpha: 0.08) : AppColors.cream;
+    final Color pillFg = isDark ? Colors.white : AppColors.navy;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, AppSpacing.xxxl,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.navy,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(AppSpacing.radiusXl)),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: gradient,
+        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(AppSpacing.radiusXl)),
       ),
       child: Column(
         children: [
@@ -66,13 +77,13 @@ class DetailHeader extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: pillBg,
               borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
             ),
             child: Text(
               alumni.promotionLabel,
               style: AppTextStyles.caption.copyWith(
-                color: AppColors.navy,
+                color: pillFg,
                 fontWeight: FontWeight.w600,
               ),
             ),

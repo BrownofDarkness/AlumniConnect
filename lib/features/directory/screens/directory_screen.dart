@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/geo_utils.dart';
@@ -140,20 +139,22 @@ class _RemovableChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        border: Border.all(color: scheme.outline),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
+          Text(label, style: AppTextStyles.caption.copyWith(color: scheme.onSurface)),
           const SizedBox(width: 4),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Icons.close_rounded, size: 14, color: AppColors.primary),
+            child: Icon(Icons.close_rounded, size: 14, color: scheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -168,6 +169,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -178,18 +180,18 @@ class _EmptyState extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.divider.withValues(alpha: 0.5),
+                color: scheme.outline.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.search_off_rounded, color: AppColors.muted, size: 32),
+              child: Icon(Icons.search_off_rounded, color: scheme.onSurfaceVariant, size: 32),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text('Aucun résultat', style: AppTextStyles.title.copyWith(color: AppColors.ink)),
+            Text('Aucun résultat', style: AppTextStyles.title.copyWith(color: scheme.onSurface)),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Aucun alumni ne correspond à votre recherche.\nEssayez d\'autres critères.',
               textAlign: TextAlign.center,
-              style: AppTextStyles.body.copyWith(color: AppColors.muted),
+              style: AppTextStyles.body.copyWith(color: scheme.onSurfaceVariant),
             ),
             const SizedBox(height: AppSpacing.lg),
             OutlinedButton(

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:allumni_connect/core/constants/app_colors.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 
-/// Raccourci d'action circulaire (Email, Appeler, LinkedIn, Carte) affiché
-/// en rangée flottante sous le bandeau de la fiche alumni.
 class ContactShortcut extends StatelessWidget {
   const ContactShortcut({
     super.key,
@@ -19,6 +16,7 @@ class ContactShortcut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -31,13 +29,13 @@ class ContactShortcut extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: scheme.primary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.primary, size: 20),
+              child: Icon(icon, color: scheme.primary, size: 20),
             ),
             const SizedBox(height: AppSpacing.xs),
-            Text(label, style: AppTextStyles.caption.copyWith(color: AppColors.muted)),
+            Text(label, style: AppTextStyles.caption.copyWith(color: scheme.onSurfaceVariant)),
           ],
         ),
       ),
