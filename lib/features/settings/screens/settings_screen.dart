@@ -134,19 +134,24 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
-
     if (!context.mounted) return;
+
+    final NavigatorState rootNavigator = Navigator.of(context, rootNavigator: true);
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
+      useRootNavigator: true,
+      builder: (_) => const PopScope(
+        canPop: false,
+        child: Center(child: CircularProgressIndicator()),
+      ),
     );
 
     try {
       final report =
           await DevSeeder(ref.read(alumniRepositoryProvider)).run();
+      rootNavigator.pop();
       if (!context.mounted) return;
-      Navigator.of(context).pop();
       final String msg;
       if (report.created == 0) {
         msg = 'Rien à faire, ${report.total} profils déjà présents.';
@@ -157,8 +162,8 @@ class SettingsScreen extends ConsumerWidget {
       }
       AppSnackBar.success(context, msg);
     } catch (_) {
+      rootNavigator.pop();
       if (!context.mounted) return;
-      Navigator.of(context).pop();
       AppSnackBar.error(
         context,
         "Impossible de peupler l'annuaire. Vérifie les règles Firestore.",
