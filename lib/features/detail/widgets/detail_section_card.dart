@@ -4,17 +4,28 @@ import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 
 /// Titre de section (label uppercase en bleu) affiché au-dessus d'une
-/// [DetailSectionCard], en dehors de son cadre blanc.
+/// [DetailSectionCard], en dehors de son cadre blanc. [trailing] permet
+/// d'ajouter une action alignée à droite (ex : icône de modification).
 class DetailSectionTitle extends StatelessWidget {
-  const DetailSectionTitle({super.key, required this.title});
+  const DetailSectionTitle({super.key, required this.title, this.trailing});
 
   final String title;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    final Text label = Text(
       title.toUpperCase(),
       style: AppTextStyles.labelCaps.copyWith(color: AppColors.primary),
+    );
+
+    if (trailing == null) return label;
+
+    return Row(
+      children: [
+        Expanded(child: label),
+        trailing!,
+      ],
     );
   }
 }

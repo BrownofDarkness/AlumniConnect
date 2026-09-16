@@ -13,13 +13,23 @@ final Provider<List<Alumni>> alumniListProvider = Provider<List<Alumni>>((ref) {
   return MockAlumniRepository.all;
 });
 
-/// Alumni actuellement connecté (mock), résolu dans [alumniListProvider]
-/// depuis [MockAlumniRepository.currentAlumniId] tant que l'authentification
-/// n'est pas branchée à un vrai profil.
-final Provider<Alumni> currentAlumniProvider = Provider<Alumni>((ref) {
-  final List<Alumni> all = ref.watch(alumniListProvider);
-  return all.firstWhere((a) => a.id == MockAlumniRepository.currentAlumniId);
-});
+/// Alumni actuellement connecté (mock), initialisé depuis
+/// [MockAlumniRepository.currentAlumniId] tant que l'authentification n'est
+/// pas branchée à un vrai profil. Modifiable via [update] (écran "Modifier
+/// mon profil") tant qu'il n'y a pas de FirestoreService pour persister.
+class CurrentAlumniNotifier extends Notifier<Alumni> {
+  @override
+  Alumni build() {
+    return ref
+        .watch(alumniListProvider)
+        .firstWhere((a) => a.id == MockAlumniRepository.currentAlumniId);
+  }
+
+  void update(Alumni updated) => state = updated;
+}
+
+final NotifierProvider<CurrentAlumniNotifier, Alumni> currentAlumniProvider =
+    NotifierProvider<CurrentAlumniNotifier, Alumni>(CurrentAlumniNotifier.new);
 
 /// Position de référence de l'alumni connecté, utilisée par le filtre de
 /// proximité géographique.
