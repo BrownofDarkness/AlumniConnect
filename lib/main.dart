@@ -44,6 +44,14 @@ class _AllumniConnectAppState extends ConsumerState<AllumniConnectApp> {
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
         themeMode: themeMode,
+        builder: (context, child) {
+          final MediaQueryData mq = MediaQuery.of(context);
+          final double clamped = mq.textScaler.scale(1).clamp(0.9, 1.3);
+          return MediaQuery(
+            data: mq.copyWith(textScaler: TextScaler.linear(clamped)),
+            child: child!,
+          );
+        },
       ),
     );
   }

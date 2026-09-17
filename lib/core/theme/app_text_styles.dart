@@ -3,8 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// Échelle typographique Inter (unique famille).
 ///
-/// TODO : envelopper avec un helper responsive (MediaQuery-based)
-/// pour scaler sur les différentes tailles de téléphone.
+/// Pour un rendu responsive, chaîner `.responsive(context)` sur le style
+/// (extension définie dans core/utils/responsive.dart). Ex :
+/// `AppTextStyles.title.responsive(context).copyWith(color: ...)`.
 class AppTextStyles {
   AppTextStyles._();
 

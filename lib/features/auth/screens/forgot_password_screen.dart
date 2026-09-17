@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
@@ -118,7 +118,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
             AppButton.primary(
-              label: 'Envoyer le lien de récupération',
+              label: 'Envoyer le lien',
               onPressed: _submit,
               state: _state,
             ),
