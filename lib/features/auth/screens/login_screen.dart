@@ -72,7 +72,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: IntrinsicHeight(
-                  child: Padding(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 480),
+                      child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                     child: Form(
                       key: _formKey,
@@ -95,6 +98,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           _footerNote(),
                           const SizedBox(height: AppSpacing.xl),
                         ],
+                      ),
+                    ),
                       ),
                     ),
                   ),

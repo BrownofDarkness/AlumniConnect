@@ -67,13 +67,16 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Changer le mot de passe')),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl,
-          ),
-          children: [
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl,
+              ),
+              children: [
             Text(
               'Pour ta sécurité, saisis ton mot de passe actuel avant d\'en choisir un nouveau.',
               style: AppTextStyles.body.copyWith(color: scheme.onSurfaceVariant),
@@ -112,7 +115,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
               onPressed: _save,
               state: _submitting ? ButtonState.loading : ButtonState.enabled,
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );

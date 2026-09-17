@@ -65,7 +65,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         ),
       ),
       body: SafeArea(
-        child: _sentTo == null ? _buildForm() : _buildSuccess(),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: _sentTo == null ? _buildForm() : _buildSuccess(),
+          ),
+        ),
       ),
     );
   }

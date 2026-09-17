@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:allumni_connect/core/constants/app_spacing.dart';
 import 'package:allumni_connect/core/theme/app_text_styles.dart';
 import 'package:allumni_connect/core/utils/geo_utils.dart';
+import 'package:allumni_connect/core/utils/responsive.dart';
 import 'package:allumni_connect/features/directory/providers/directory_providers.dart';
 import 'package:allumni_connect/features/directory/providers/filters_state.dart';
 import 'package:allumni_connect/features/directory/widgets/alumni_card.dart';
@@ -66,29 +67,79 @@ class DirectoryScreen extends ConsumerWidget {
               ? (all.isEmpty && !filters.hasActiveFilters
                   ? const _DirectoryEmptyState()
                   : _NoResultsState(onReset: notifier.reset))
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xl,
-                  ),
-                  itemCount: alumni.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-                  itemBuilder: (context, index) {
-                    final Alumni a = alumni[index];
-                    final String? distanceLabel = filters.proximityEnabled
-                        ? GeoUtils.format(ref.watch(distanceKmProvider(a)))
-                        : null;
-                    return AlumniCard(
-                      alumni: a,
-                      distanceLabel: distanceLabel,
-                      onTap: () => context.pushNamed(
-                        RouteName.alumniDetail,
-                        pathParameters: {'id': a.id},
-                      ),
-                    );
-                  },
+              : _AlumniListView(
+                  alumni: alumni,
+                  filters: filters,
+                  ref: ref,
                 ),
         ),
       ],
+    );
+  }
+}
+
+class _AlumniListView extends StatelessWidget {
+  const _AlumniListView({
+    required this.alumni,
+    required this.filters,
+    required this.ref,
+  });
+
+  final List<Alumni> alumni;
+  final FiltersState filters;
+  final WidgetRef ref;
+
+  void _openDetail(BuildContext context, Alumni a) {
+    context.pushNamed(
+      RouteName.alumniDetail,
+      pathParameters: {'id': a.id},
+    );
+  }
+
+  String? _distanceLabel(Alumni a) {
+    if (!filters.proximityEnabled) return null;
+    return GeoUtils.format(ref.watch(distanceKmProvider(a)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const EdgeInsets padding = EdgeInsets.fromLTRB(
+      AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xl,
+    );
+
+    if (context.isTablet) {
+      return GridView.builder(
+        padding: padding,
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 360,
+          mainAxisSpacing: AppSpacing.sm,
+          crossAxisSpacing: AppSpacing.sm,
+          mainAxisExtent: 108,
+        ),
+        itemCount: alumni.length,
+        itemBuilder: (context, index) {
+          final Alumni a = alumni[index];
+          return AlumniCard(
+            alumni: a,
+            distanceLabel: _distanceLabel(a),
+            onTap: () => _openDetail(context, a),
+          );
+        },
+      );
+    }
+
+    return ListView.separated(
+      padding: padding,
+      itemCount: alumni.length,
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+      itemBuilder: (context, index) {
+        final Alumni a = alumni[index];
+        return AlumniCard(
+          alumni: a,
+          distanceLabel: _distanceLabel(a),
+          onTap: () => _openDetail(context, a),
+        );
+      },
     );
   }
 }

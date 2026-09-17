@@ -22,17 +22,22 @@ class OnboardingStepShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (showBackButton) _buildTopBar(context),
-        if (currentStep != null) _buildProgressZone(),
-        Expanded(child: child),
-        if (bottomAction != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(28, 12, 28, 22),
-            child: bottomAction!,
-          ),
-      ],
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Column(
+          children: [
+            if (showBackButton) _buildTopBar(context),
+            if (currentStep != null) _buildProgressZone(),
+            Expanded(child: child),
+            if (bottomAction != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(28, 12, 28, 22),
+                child: bottomAction!,
+              ),
+          ],
+        ),
+      ),
     );
   }
 
